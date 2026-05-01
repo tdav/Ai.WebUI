@@ -1,0 +1,32 @@
+@* Ai.WebUI/Components/Shared/ModelSelector.razor *@
+@using Ai.WebUI.Services.AI
+@inject OllamaChatService OllamaChat
+
+<div class="model-selector">
+    <label class="field-label">Модель</label>
+    <select class="field-input" value="@SelectedModel" @onchange="OnChanged">
+        @foreach (var m in models)
+        {
+            <option value="@m">@m</option>
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter] public string SelectedModel { get; set; } = "llama3.2";
+    [Parameter] public EventCallback<string> SelectedModelChanged { get; set; }
+
+    private List<string> models = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { models = await OllamaChat.GetModelsAsync(); }
+        catch { models = [SelectedModel]; }
+
+        if (!models.Contains(SelectedModel) && models.Count > 0)
+            SelectedModel = models[0];
+    }
+
+    private async Task OnChanged(ChangeEventArgs e) =>
+        await SelectedModelChanged.InvokeAsync(e.Value?.ToString() ?? SelectedModel);
+}

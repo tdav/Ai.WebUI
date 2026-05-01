@@ -1,0 +1,108 @@
+@* Ai.WebUI/Components/Shared/DocumentUpload.razor *@
+@using Ai.WebUI.Database
+@using Ai.WebUI.Services
+@inject DocumentService DocService
+@inject AppDbContext Db
+
+<div class="doc-upload @(isDragOver ? "doc-upload--dragover" : "")"
+     @ondragover:preventDefault
+     @ondragover="() => isDragOver = true"
+     @ondragleave="() => isDragOver = false"
+     @ondrop:preventDefault
+     @ondrop="HandleDrop">
+
+    <InputFile OnChange="HandleFileSelected" multiple class="doc-upload-input" accept=".pdf,.txt,.md,.docx,.xlsx,.pptx" />
+
+    <span style="color:var(--color-text-muted);font-size:0.8rem">
+        Перетащите файлы или кликните для выбора
+    </span>
+</div>
+
+@if (documents.Count > 0)
+{
+    <div class="doc-list">
+        @foreach (var doc in documents)
+        {
+            <div class="doc-pill">
+                <span>@doc.FileName</span>
+                <button class="doc-remove" @onclick="() => RemoveDocument(doc)">×</button>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .doc-upload {
+        position: relative; display: flex; align-items: center; justify-content: center;
+        padding: 16px; border-radius: var(--radius-md);
+        background: var(--color-inset); box-shadow: var(--shadow-inset-sm);
+        border: 1px solid transparent; cursor: pointer;
+        transition: border-color 150ms;
+    }
+    .doc-upload--dragover { border-color: var(--color-accent); }
+    .doc-upload-input {
+        position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+    .doc-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .doc-pill {
+        display: flex; align-items: center; gap: 6px;
+        padding: 4px 10px; border-radius: 999px;
+        background: var(--color-surface); font-size: 0.75rem;
+        color: var(--color-text-secondary);
+        box-shadow: var(--shadow-inset-sm);
+    }
+    .doc-remove {
+        background: none; border: none; cursor: pointer;
+        color: var(--color-text-muted); font-size: 1rem; line-height: 1;
+    }
+    .doc-remove:hover { color: var(--color-log-error); }
+</style>
+
+@code {
+    [Parameter, EditorRequired] public Guid ChatId { get; set; }
+    [Parameter, EditorRequired] public string UserId { get; set; } = string.Empty;
+    [Parameter] public EventCallback<List<Database.Entities.Document>> OnDocumentsChanged { get; set; }
+
+    private List<Database.Entities.Document> documents = [];
+    private bool isDragOver;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e) =>
+        await ProcessFiles(e.GetMultipleFiles());
+
+    private Task HandleDrop(DragEventArgs e)
+    {
+        isDragOver = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task ProcessFiles(IReadOnlyList<IBrowserFile> files)
+    {
+        foreach (var file in files)
+        {
+            if (!DocService.IsSupported(file.ContentType)) continue;
+
+            var extractedText = await DocService.ExtractTextAsync(file);
+            var doc = new Database.Entities.Document
+            {
+                FileName = file.Name,
+                ContentType = file.ContentType,
+                FilePath = string.Empty,
+                ExtractedText = extractedText,
+                ChatId = ChatId,
+                UserId = UserId
+            };
+            Db.Documents.Add(doc);
+            documents.Add(doc);
+        }
+        await Db.SaveChangesAsync();
+        await OnDocumentsChanged.InvokeAsync(documents);
+    }
+
+    private async Task RemoveDocument(Database.Entities.Document doc)
+    {
+        Db.Documents.Remove(doc);
+        documents.Remove(doc);
+        await Db.SaveChangesAsync();
+        await OnDocumentsChanged.InvokeAsync(documents);
+    }
+}
