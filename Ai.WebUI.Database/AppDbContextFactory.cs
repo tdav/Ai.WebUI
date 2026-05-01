@@ -3,13 +3,19 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Ai.WebUI.Database;
 
-public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+public class AppDbContextFactory : IDesignTimeDbContextFactory<MyDbContext>
 {
-    public AppDbContext CreateDbContext(string[] args)
+    public MyDbContext CreateDbContext(string[] args)
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+        var options = new DbContextOptionsBuilder<MyDbContext>()
             .UseNpgsql("Host=localhost;Database=webui_ai_log;Username=postgres;Password=postgres")
+            .UseSnakeCaseNamingConvention()
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging()
             .Options;
-        return new AppDbContext(options);
+
+        return new MyDbContext(options);
     }
 }

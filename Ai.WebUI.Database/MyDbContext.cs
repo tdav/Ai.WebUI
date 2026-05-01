@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ai.WebUI.Database;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
+public class MyDbContext(DbContextOptions<MyDbContext> options) : IdentityDbContext<AppUser>(options)
 {
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Chat> Chats => Set<Chat>();

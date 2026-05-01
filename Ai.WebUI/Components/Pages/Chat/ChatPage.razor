@@ -6,7 +6,7 @@
 @using Ai.WebUI.Services.AI
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.SemanticKernel.ChatCompletion
-@inject IDbContextFactory<AppDbContext> DbFactory
+@inject IDbContextFactory<MyDbContext> DbFactory
 @inject OllamaChatService OllamaChat
 @inject Ai.WebUI.Services.AI.IHistoryReducer HistoryReducer
 @inject AuthenticationStateProvider AuthState

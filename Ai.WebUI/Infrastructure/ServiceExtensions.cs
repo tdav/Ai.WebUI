@@ -15,8 +15,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connStr = configuration.GetConnectionString("DefaultConnection");
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connStr));
-        services.AddDbContextFactory<AppDbContext>(options => options.UseNpgsql(connStr));
+        services.AddDbContextFactory<MyDbContext>(options => options.UseNpgsql(connStr), ServiceLifetime.Scoped);
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
@@ -26,7 +25,7 @@ public static class ServiceExtensions
             options.Password.RequireUppercase = false;
             options.Password.RequireNonAlphanumeric = false;
         })
-        .AddEntityFrameworkStores<AppDbContext>()
+        .AddEntityFrameworkStores<MyDbContext>()
         .AddDefaultTokenProviders();
 
         return services;
@@ -57,5 +56,40 @@ public static class ServiceExtensions
         services.AddDefaultContentDecoders();
         services.AddScoped<DocumentService>();
         return services;
+    }
+
+    public static async Task UpdateMigrateDatabaseAsync(this WebApplication app)
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+        await db.Database.MigrateAsync();
+        await SeedAdminUserAsync(scope.ServiceProvider, app.Configuration);
+    }
+
+    private static async Task SeedAdminUserAsync(IServiceProvider services, IConfiguration configuration)
+    {
+        var email = configuration["AdminUser:Email"] ?? "admin@admin.com";
+        var password = configuration["AdminUser:Password"] ?? "Admin123!";
+        var displayName = configuration["AdminUser:DisplayName"] ?? "Administrator";
+
+        var userManager = services.GetRequiredService<UserManager<AppUser>>();
+
+        if (await userManager.FindByEmailAsync(email) is not null)
+            return;
+
+        var admin = new AppUser
+        {
+            UserName = email,
+            Email = email,
+            DisplayName = displayName,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(admin, password);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Failed to seed admin user: {errors}");
+        }
     }
 }

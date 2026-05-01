@@ -3,7 +3,7 @@
 @using Ai.WebUI.Services
 @using Microsoft.EntityFrameworkCore
 @inject DocumentService DocService
-@inject IDbContextFactory<AppDbContext> DbFactory
+@inject IDbContextFactory<MyDbContext> DbFactory
 
 <div class="doc-upload @(isDragOver ? "doc-upload--dragover" : "")"
      @ondragover:preventDefault
