@@ -34,6 +34,13 @@ public static class ServiceExtensions
         .AddEntityFrameworkStores<MyDbContext>()
         .AddDefaultTokenProviders();
 
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/login";
+            options.LogoutPath = "/logout";
+            options.AccessDeniedPath = "/login";
+        });
+
         return services;
     }
 
@@ -66,12 +73,6 @@ public static class ServiceExtensions
 
     public static async Task UpdateMigrateDatabaseAsync(this WebApplication app)
     {
-    //    await using var scope = app.Services.CreateAsyncScope();
-    //    var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-    //    await db.Database.MigrateAsync();
-    //    await SeedAdminUserAsync(scope.ServiceProvider, app.Configuration);
-    //}
-
         using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
 
@@ -97,6 +98,8 @@ public static class ServiceExtensions
             Log.Error(ex, "An error occurred while applying database migrations");
             throw;
         }
+
+        await SeedAdminUserAsync(scope.ServiceProvider, app.Configuration);
     }
 
     private static async Task SeedAdminUserAsync(IServiceProvider services, IConfiguration configuration)
