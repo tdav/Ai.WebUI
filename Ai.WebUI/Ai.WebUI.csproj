@@ -7,4 +7,8 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Ai.WebUI.DataFormats\Ai.WebUI.DataFormats.csproj" />
+  </ItemGroup>
+
 </Project>

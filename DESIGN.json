@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-30T00:00:00.000Z",
+  "title": "Design System: LogSystem",
+  "extensions": {
+    "colorMeta": {
+      "ember-orange":       { "role": "primary",  "displayName": "Ember Orange",      "canonical": "#FF6B2C", "tonalRamp": ["#3D1800", "#5A2400", "#7A3300", "#994400", "#BB5500", "#DD6622", "#FF6B2C", "#FF8C42", "#FFB085", "#FFD4BF"] },
+      "ember-orange-light": { "role": "primary",  "displayName": "Ember Orange Light","canonical": "#FF8C42", "tonalRamp": ["#3D2000", "#5A3000", "#7A4200", "#9A5400", "#BB6600", "#DD7822", "#FF8C42", "#FFA66A", "#FFC099", "#FFDDC2"] },
+      "bg-dark":            { "role": "neutral",  "displayName": "Deep Slate",        "canonical": "#2D2D35", "tonalRamp": ["#0A0A10", "#141418", "#1E1E26", "#28282F", "#2D2D35", "#363640", "#3A3A45", "#525260", "#787888", "#A0A0B0"] },
+      "panel-dark":         { "role": "neutral",  "displayName": "Elevated Slate",    "canonical": "#363640", "tonalRamp": ["#0A0A10", "#141418", "#1E1E26", "#28282F", "#2D2D35", "#363640", "#3A3A45", "#525260", "#787888", "#A0A0B0"] },
+      "inset-dark":         { "role": "neutral",  "displayName": "Sunken Void",       "canonical": "#1E1E26", "tonalRamp": ["#050508", "#0A0A10", "#121218", "#1E1E26", "#252530", "#2D2D38", "#363642", "#484858", "#686878", "#909098"] },
+      "surface-dark":       { "role": "neutral",  "displayName": "Mid Slate",         "canonical": "#3A3A45", "tonalRamp": ["#0A0A10", "#141418", "#1E1E26", "#2D2D35", "#363640", "#3A3A45", "#484855", "#606070", "#808090", "#A8A8B8"] },
+      "bg-light":           { "role": "neutral",  "displayName": "Cool Mist",         "canonical": "#F0F0F5", "tonalRamp": ["#28282F", "#3A3A42", "#505058", "#686870", "#888892", "#AAAAБ2", "#C8C8D0", "#DCDCE4", "#ECECF2", "#F0F0F5"] },
+      "panel-light":        { "role": "neutral",  "displayName": "Pure Panel",        "canonical": "#FFFFFF", "tonalRamp": ["#303030", "#484848", "#606060", "#808080", "#A0A0A0", "#C0C0C0", "#D8D8D8", "#EBEBEB", "#F5F5F5", "#FFFFFF"] },
+      "inset-light":        { "role": "neutral",  "displayName": "Recessed",          "canonical": "#E4E4EC", "tonalRamp": ["#28282F", "#38383F", "#505058", "#686870", "#888892", "#ACACB4", "#C4C4CC", "#D4D4DC", "#DCDCE4", "#E4E4EC"] },
+      "text-primary-dark":  { "role": "neutral",  "displayName": "Stark White",       "canonical": "#FFFFFF", "tonalRamp": ["#303030", "#484848", "#606060", "#808080", "#A0A0A0", "#C0C0C0", "#D8D8D8", "#EBEBEB", "#F5F5F5", "#FFFFFF"] },
+      "text-primary-light": { "role": "neutral",  "displayName": "Deep Navy",         "canonical": "#1A1A2E", "tonalRamp": ["#0A0A18", "#121220", "#1A1A2E", "#28283C", "#383850", "#505068", "#707088", "#9090A8", "#B0B0C8", "#D0D0E0"] },
+      "text-secondary":     { "role": "neutral",  "displayName": "Steel Mist",        "canonical": "#8A8A9A", "tonalRamp": ["#202030", "#303040", "#484858", "#606070", "#787888", "#8A8A9A", "#A0A0B0", "#B8B8C8", "#CECEDE", "#E4E4F0"] },
+      "text-muted":         { "role": "neutral",  "displayName": "Faded Ash",         "canonical": "#7D7D8A", "tonalRamp": ["#1E1E28", "#2E2E38", "#464650", "#5E5E68", "#707080", "#7D7D8A", "#9A9AA8", "#B4B4C0", "#CACACC", "#E0E0E8"] },
+      "log-error":          { "role": "semantic", "displayName": "Alert Red",         "canonical": "#FF4D4D", "tonalRamp": ["#3D0000", "#620000", "#880000", "#A80000", "#CC1010", "#EE2222", "#FF4D4D", "#FF7070", "#FF9999", "#FFCCCC"] },
+      "log-warn":           { "role": "semantic", "displayName": "Warning Amber",     "canonical": "#FFB02E", "tonalRamp": ["#3D2800", "#5A3C00", "#7A5200", "#9A6A00", "#BB8800", "#DDA000", "#FFB02E", "#FFC55E", "#FFDAA0", "#FFEECC"] },
+      "log-info":           { "role": "semantic", "displayName": "Data Blue",         "canonical": "#4DA6FF", "tonalRamp": ["#001840", "#002C6A", "#00439A", "#0055BB", "#1A70DD", "#3390FF", "#4DA6FF", "#80BFFF", "#AACFFF", "#D4E8FF"] },
+      "log-debug":          { "role": "semantic", "displayName": "Signal Green",      "canonical": "#48C25C", "tonalRamp": ["#002E0A", "#004A12", "#006820", "#008A30", "#20A840", "#38BA50", "#48C25C", "#70D47A", "#9EE4AA", "#C8F4D0"] },
+      "status-online":      { "role": "semantic", "displayName": "Online Green",      "canonical": "#4ADE80", "tonalRamp": ["#003018", "#005028", "#00783E", "#009A52", "#20BC68", "#38D078", "#4ADE80", "#70E89A", "#9AF0B8", "#C4F8D4"] },
+      "status-offline":     { "role": "semantic", "displayName": "Offline Grey",      "canonical": "#6B7280", "tonalRamp": ["#1A1C20", "#282C32", "#38404A", "#505864", "#606870", "#6B7280", "#848E9A", "#A0AAB4", "#BEC8D0", "#D8E0E8"] }
+    },
+    "typographyMeta": {
+      "title":    { "displayName": "Title",    "purpose": "Заголовки страниц и крупных секций." },
+      "headline": { "displayName": "Headline", "purpose": "Подзаголовки разделов, названия карточек метрик." },
+      "body":     { "displayName": "Body",     "purpose": "Основной текст UI, строки таблицы логов." },
+      "label":    { "displayName": "Label",    "purpose": "Метки полей, заголовки колонок, теги уровней." },
+      "mono":     { "displayName": "Mono",     "purpose": "Сообщения логов, стектрейсы, trace ID, JSON payload — JetBrains Mono." }
+    },
+    "shadows": [
+      { "name": "raised",    "value": "6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)",           "purpose": "Карточки и основные панели." },
+      { "name": "raised-sm", "value": "3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)",             "purpose": "Кнопки в покое, небольшие элементы управления." },
+      { "name": "flat",      "value": "2px 2px 5px var(--neu-shadow-dark), -2px -2px 5px var(--neu-shadow-light)",             "purpose": "Hover-состояние кнопок — переходное между raised и inset." },
+      { "name": "inset",     "value": "inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light)", "purpose": "Поля ввода, контейнеры с данными." },
+      { "name": "inset-sm",  "value": "inset 2px 2px 4px var(--neu-shadow-dark), inset -2px -2px 4px var(--neu-shadow-light)", "purpose": "Небольшие inset-элементы, фокус-кольца." },
+      { "name": "pressed",   "value": "inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light)", "purpose": "Нажатое состояние кнопок — active." }
+    ],
+    "motion": [
+      { "name": "fast",   "value": "150ms ease", "purpose": "Hover-эффекты, показ/скрытие небольших элементов." },
+      { "name": "normal", "value": "250ms ease", "purpose": "Смена темы, раскрытие панелей, переходы кнопок." },
+      { "name": "slow",   "value": "400ms ease", "purpose": "Sidebar collapse, крупные layout-изменения." }
+    ],
+    "breakpoints": [
+      { "name": "sm",  "value": "640px" },
+      { "name": "md",  "value": "768px" },
+      { "name": "lg",  "value": "1024px" },
+      { "name": "xl",  "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button Default",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Neumorphic raised кнопка для вторичных действий.",
+      "html": "<button class=\"ds-btn-default\">Применить</button>",
+      "css": ".ds-btn-default { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: none; border-radius: 8px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; background: #363640; color: #FFFFFF; box-shadow: 3px 3px 6px rgba(0,0,0,0.4), -3px -3px 6px rgba(255,255,255,0.05); transition: box-shadow 250ms ease, filter 250ms ease; min-height: 36px; white-space: nowrap; user-select: none; } .ds-btn-default:hover:not(:disabled) { box-shadow: 2px 2px 5px rgba(0,0,0,0.4), -2px -2px 5px rgba(255,255,255,0.05); } .ds-btn-default:active:not(:disabled) { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4), inset -3px -3px 6px rgba(255,255,255,0.05); } .ds-btn-default:focus-visible { outline: 2px solid #FF6B2C; outline-offset: 2px; } .ds-btn-default:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Button Accent",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "Основная CTA-кнопка. Ember Orange градиент. Используется максимум один раз на экране.",
+      "html": "<button class=\"ds-btn-accent\">Экспортировать</button>",
+      "css": ".ds-btn-accent { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: none; border-radius: 8px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; background: linear-gradient(135deg, #FF6B2C 0%, #FF8C42 100%); color: #FFFFFF; box-shadow: 3px 3px 6px rgba(0,0,0,0.4), -3px -3px 6px rgba(255,255,255,0.05), 0 2px 8px rgba(255,107,44,0.3); transition: box-shadow 250ms ease, filter 250ms ease; min-height: 36px; white-space: nowrap; user-select: none; } .ds-btn-accent:hover:not(:disabled) { box-shadow: 2px 2px 5px rgba(0,0,0,0.4), -2px -2px 5px rgba(255,255,255,0.05), 0 4px 12px rgba(255,107,44,0.4); filter: brightness(1.05); } .ds-btn-accent:active:not(:disabled) { box-shadow: inset 3px 3px 6px rgba(0,0,0,0.4), inset -3px -3px 6px rgba(255,255,255,0.05); filter: brightness(0.95); } .ds-btn-accent:focus-visible { outline: 2px solid #FF8C42; outline-offset: 2px; } .ds-btn-accent:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Button Ghost",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Прозрачная кнопка для вторичных действий рядом с accent.",
+      "html": "<button class=\"ds-btn-ghost\">Отмена</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: none; border-radius: 8px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; background: transparent; color: #8A8A9A; box-shadow: none; transition: background 250ms ease, color 250ms ease; min-height: 36px; white-space: nowrap; user-select: none; } .ds-btn-ghost:hover:not(:disabled) { background: rgba(255,107,44,0.12); color: #FFFFFF; } .ds-btn-ghost:active:not(:disabled) { background: rgba(255,107,44,0.12); box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4), inset -2px -2px 4px rgba(255,255,255,0.05); } .ds-btn-ghost:focus-visible { outline: 2px solid #FF6B2C; outline-offset: 2px; } .ds-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Neumorphic inset поле ввода с иконкой поиска.",
+      "html": "<div class=\"ds-input-wrap\"><span class=\"ds-input-icon\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\"><circle cx=\"7\" cy=\"7\" r=\"5\" stroke=\"#8A8A9A\" stroke-width=\"1.5\"/><path d=\"M11 11L14 14\" stroke=\"#8A8A9A\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg></span><input class=\"ds-input-field\" type=\"text\" placeholder=\"Поиск по логам...\"/></div>",
+      "css": ".ds-input-wrap { display: flex; align-items: center; gap: 8px; background: #1E1E26; border-radius: 8px; padding: 0 16px; min-height: 36px; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.4), inset -2px -2px 4px rgba(255,255,255,0.05); border: 1px solid transparent; transition: border-color 250ms ease; } .ds-input-wrap:focus-within { border-color: #FF6B2C; } .ds-input-icon { display: flex; align-items: center; flex-shrink: 0; } .ds-input-field { flex: 1; background: transparent; border: none; outline: none; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; font-weight: 400; color: #FFFFFF; line-height: 1.5; } .ds-input-field::placeholder { color: #7D7D8A; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Neumorphic raised карточка для группировки контента.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-label\">Всего логов</p><p class=\"ds-card-value\">142 837</p></div>",
+      "css": ".ds-card { background: #363640; border-radius: 16px; padding: 24px; box-shadow: 6px 6px 12px rgba(0,0,0,0.4), -6px -6px 12px rgba(255,255,255,0.05); } .ds-card-label { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.75rem; font-weight: 500; color: #8A8A9A; letter-spacing: 0.02em; text-transform: uppercase; margin-bottom: 8px; } .ds-card-value { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1.5rem; font-weight: 600; color: #FFFFFF; line-height: 1.3; }"
+    },
+    {
+      "name": "Log Level Badge",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "Pill-тег уровня лога. Цвет несёт семантическую нагрузку.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge--error\">ERROR</span><span class=\"ds-badge ds-badge--warn\">WARN</span><span class=\"ds-badge ds-badge--info\">INFO</span><span class=\"ds-badge ds-badge--debug\">DEBUG</span></div>",
+      "css": ".ds-badges { display: flex; gap: 8px; flex-wrap: wrap; } .ds-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 9999px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; white-space: nowrap; } .ds-badge--error { color: #FF4D4D; background: rgba(255,77,77,0.12); } .ds-badge--warn  { color: #FFB02E; background: rgba(255,176,46,0.12); } .ds-badge--info  { color: #4DA6FF; background: rgba(77,166,255,0.10); } .ds-badge--debug { color: #48C25C; background: rgba(72,194,92,0.08); }"
+    },
+    {
+      "name": "Log Row",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Строка таблицы логов — центральный компонент системы. Фиксированная высота 44px для виртуального скролла.",
+      "html": "<div class=\"ds-log-row\"><span class=\"ds-log-badge ds-log-badge--error\">ERROR</span><span class=\"ds-log-timestamp\">2026-04-30 14:32:07.441</span><span class=\"ds-log-service\">WebApi</span><span class=\"ds-log-message\">Connection timeout: unable to reach database host at 192.168.0.10:5432 after 30s</span></div>",
+      "css": ".ds-log-row { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 16px; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 150ms ease; cursor: pointer; overflow: hidden; } .ds-log-row:hover { background: rgba(58,58,69,0.6); } .ds-log-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 9999px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; flex-shrink: 0; } .ds-log-badge--error { color: #FF4D4D; background: rgba(255,77,77,0.12); } .ds-log-timestamp { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: 0.75rem; color: #8A8A9A; flex-shrink: 0; width: 180px; } .ds-log-service { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.75rem; font-weight: 500; color: #8A8A9A; flex-shrink: 0; width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-log-message { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; color: #FFFFFF; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }"
+    },
+    {
+      "name": "Nav Item",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Элемент сайдбара навигации. Ghost в покое, orange-tinted active.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"/></svg><span>Дашборд</span></a><a class=\"ds-nav-item ds-nav-item--active\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z\"/><polyline points=\"14 2 14 8 20 8\"/></svg><span>Логи</span></a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 4px; padding: 8px; } .ds-nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; text-decoration: none; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.875rem; font-weight: 500; color: #8A8A9A; background: transparent; transition: background 150ms ease, color 150ms ease; } .ds-nav-item:hover { background: rgba(255,107,44,0.08); color: #FFFFFF; } .ds-nav-item--active { background: rgba(255,107,44,0.12); color: #FF6B2C; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Precision Instrument",
+    "overview": "LogSystem — это профессиональный инструмент измерения, а не витрина. Как осциллограф или спектральный анализатор, система существует ради данных, которые через неё проходят. Визуальный язык сдержан намеренно: neumorphic-поверхности создают глубину без украшений, единственный хроматический акцент — Ember Orange — зарезервирован строго для действий и интерактивных элементов. Всё остальное — нейтрально.\n\nСистема поддерживает два полноценных визуальных режима: тёмная тема для работы с потоком данных в условиях низкой освещённости; светлая — для аналитической работы и построения отчётов. Оба режима сохраняют полную семантику и иерархию.\n\nСистема отвергает три паттерна: шаблонные Bootstrap/Material admin-панели с их серо-синей безликостью; перегруженные дашборды без иерархии; retro-терминальную эстетику с зелёным текстом на чёрном.",
+    "keyCharacteristics": [
+      "Neumorphic elevation: глубина создаётся парными тенями, а не цветовыми границами",
+      "Единственный акцент: Ember Orange используется строго для интерактивных элементов",
+      "Семантические цвета: уровни логов читаются мгновенно по цвету",
+      "Монопропорциональная типографика для технических значений и данных",
+      "Две полноценные темы с идентичной семантикой"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule",           "body": "Ember Orange — единственный хроматический цвет на любом экране. Его редкость — это его смысл. Любое использование оранжевого сигнализирует: 'здесь можно действовать'.",                                                  "section": "colors" },
+      { "name": "The Semantic Immutability Rule","body": "Alert Red, Warning Amber, Data Blue, Signal Green принадлежат исключительно уровням логов и статусам. Нельзя использовать эти цвета для брендинга, декора или произвольных состояний.",                              "section": "colors" },
+      { "name": "The Mono-for-Data Rule",        "body": "Любое значение, которое читается посимвольно — trace ID, stack trace, JSON, timestamp с миллисекундами — рендерится JetBrains Mono. Никогда не смешивать Inter и JetBrains Mono для одного токена данных.",          "section": "typography" },
+      { "name": "The Paired Shadow Rule",        "body": "Neumorphic-тень всегда состоит из двух компонентов: тёмного и светлого. Одиночная тень нарушает иллюзию материала и выглядит как обычный drop-shadow. Никаких одиночных теней.",                                       "section": "elevation" },
+      { "name": "The No-Border Rule",            "body": "Границы между поверхностями создаются тенями, не border. Видимая граница допустима только как семантический сигнал (focus-ring, выбранный элемент навигации), но никогда — как разделитель соседних поверхностей.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do использовать Ember Orange (#FF6B2C) только для интерактивных элементов: primary-кнопок, активных состояний навигации, focus-колец.",
+      "Do рендерить все технические значения (trace ID, timestamp с миллисекундами, JSON, stack trace) в JetBrains Mono.",
+      "Do применять парные neumorphic-тени (тёмная + светлая). Одиночная тень нарушает систему.",
+      "Do поддерживать оба визуальных режима (dark/light). Каждый новый компонент обязан использовать CSS-переменные.",
+      "Do соблюдать WCAG AA: минимум 4.5:1 для обычного текста, 3:1 для крупного текста и интерактивных элементов.",
+      "Do применять семантические цвета уровней логов строго по назначению.",
+      "Do использовать prefers-reduced-motion — отключать все transition и animation, сохраняя функциональность."
+    ],
+    "donts": [
+      "Don't использовать border-left или border-right больше 1px как цветной акцент на карточках или строках.",
+      "Don't воспроизводить Bootstrap/Material шаблонный подход: серо-синие панели без характера.",
+      "Don't перегружать экраны виджетами без иерархии — нарушение принципа 'Данные прежде всего'.",
+      "Don't применять background-clip: text с градиентом.",
+      "Don't использовать glassmorphism (backdrop-filter + rgba blur) как декорацию.",
+      "Don't использовать Signal Green (#48C25C) для чего-либо кроме DEBUG/TRACE уровней и online-статуса.",
+      "Don't создавать вложенные карточки с теми же raised-тенями. Используйте card-inset.",
+      "Don't добавлять анимированные иллюстрации, яркие градиентные фоны, emoji в UI, скругления >24px на контейнерах."
+    ]
+  }
+}

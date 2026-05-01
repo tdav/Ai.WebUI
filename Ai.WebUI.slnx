@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="Ai.WebUI.Database/Ai.WebUI.Database.csproj" />
+  <Project Path="Ai.WebUI.DataFormats/Ai.WebUI.DataFormats.csproj" />
   <Project Path="Ai.WebUI/Ai.WebUI.csproj" />
 </Solution>
