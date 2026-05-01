@@ -48,7 +48,7 @@
 
 <CreateProjectModal IsOpen="showCreateModal"
                     OnClose="() => showCreateModal = false"
-                    OnCreated="OnProjectCreated" />
+                    OnCreated="() => showCreateModal = false" />
 
 <style>
     .project-card { cursor: pointer; transition: box-shadow 150ms; }
@@ -75,9 +75,4 @@
 
     private void OpenProject(Guid id) => Nav.NavigateTo("/projects/" + id);
 
-    private async Task OnProjectCreated()
-    {
-        showCreateModal = false;
-        // Navigation already happened inside CreateProjectModal
-    }
 }
