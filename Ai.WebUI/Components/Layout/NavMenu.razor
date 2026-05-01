@@ -1,30 +1,115 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Ai.WebUI</a>
+@* Ai.WebUI/Components/Layout/NavMenu.razor *@
+@using Ai.WebUI.Database
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Nav
+
+<nav class="sidebar @(collapsed ? "sidebar--collapsed" : "")">
+    <div class="sidebar-header">
+        @if (!collapsed)
+        {
+            <span class="sidebar-title">Ai.WebUI</span>
+        }
+        <button class="btn btn-ghost sidebar-toggle" @onclick="ToggleCollapse">
+            @(collapsed ? "›" : "‹")
+        </button>
     </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+    @if (!collapsed)
+    {
+        <a href="/" class="btn btn-accent sidebar-new-project" style="margin: 12px 16px;">
+            + Проект
+        </a>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+        @foreach (var project in projects)
+        {
+            <div class="nav-project @(currentProjectId == project.Id ? "nav-project--active" : "")">
+                <a href="/projects/@project.Id" class="nav-project-name">
+                    @project.Name
+                    <span class="nav-badge">@project.Chats.Count</span>
+                </a>
+                @if (currentProjectId == project.Id)
+                {
+                    @foreach (var chat in project.Chats.OrderByDescending(c => c.UpdatedAt))
+                    {
+                        <a href="/chat/@chat.Id"
+                           class="nav-chat-item @(currentChatId == chat.Id ? "nav-chat-item--active" : "")">
+                            @chat.Title
+                        </a>
+                    }
+                }
+            </div>
+        }
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+    <div class="sidebar-footer">
+        <a href="/logout" class="btn btn-ghost">Выйти</a>
+    </div>
+</nav>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+<style>
+    .sidebar {
+        width: 260px; min-width: 260px;
+        background: var(--color-panel);
+        box-shadow: var(--shadow-raised);
+        display: flex; flex-direction: column;
+        transition: width 250ms ease, min-width 250ms ease;
+        overflow: hidden;
+    }
+    .sidebar--collapsed { width: 64px; min-width: 64px; }
+    .sidebar-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .sidebar-title { font-weight: 600; color: var(--color-text-primary); }
+    .nav-project { padding: 4px 8px; }
+    .nav-project-name {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px; border-radius: var(--radius-md);
+        color: var(--color-text-secondary); text-decoration: none;
+        font-weight: 500; transition: background 150ms;
+    }
+    .nav-project--active .nav-project-name {
+        background: var(--color-accent-bg);
+        color: var(--color-accent);
+    }
+    .nav-badge {
+        font-size: 0.7rem; background: var(--color-surface);
+        padding: 2px 6px; border-radius: 999px;
+        color: var(--color-text-muted);
+    }
+    .nav-chat-item {
+        display: block; padding: 6px 8px 6px 20px;
+        border-radius: var(--radius-sm);
+        color: var(--color-text-secondary); text-decoration: none;
+        font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        transition: background 150ms;
+    }
+    .nav-chat-item:hover { background: var(--color-surface); }
+    .nav-chat-item--active { color: var(--color-accent); background: var(--color-accent-bg); }
+    .sidebar-footer { margin-top: auto; padding: 16px; }
+</style>
 
+@code {
+    private bool collapsed;
+    private List<Project> projects = [];
+    private Guid? currentProjectId;
+    private Guid? currentChatId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null) return;
+
+        projects = await Db.Projects
+            .Include(p => p.Chats)
+            .Where(p => p.UserId == userId)
+            .OrderByDescending(p => p.UpdatedAt)
+            .ToListAsync();
+    }
+
+    private void ToggleCollapse() => collapsed = !collapsed;
+}
