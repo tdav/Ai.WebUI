@@ -1,0 +1,90 @@
+@* Ai.WebUI/Components/Pages/Auth/Register.razor *@
+@page "/register"
+@attribute [AllowAnonymous]
+@using Ai.WebUI.Database.Entities
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AppUser> UserManager
+@inject SignInManager<AppUser> SignInManager
+@inject NavigationManager Nav
+
+<PageTitle>Регистрация — Ai.WebUI</PageTitle>
+
+<div class="auth-wrapper">
+    <div class="card auth-card">
+        <h1 class="auth-title">Регистрация</h1>
+
+        <EditForm Model="model" OnValidSubmit="HandleRegister" FormName="register">
+            <DataAnnotationsValidator />
+            <div class="field" style="margin-bottom:16px">
+                <label class="field-label">Имя</label>
+                <InputText @bind-Value="model.DisplayName" class="field-input" placeholder="Имя" />
+                <ValidationMessage For="() => model.DisplayName" />
+            </div>
+            <div class="field" style="margin-bottom:16px">
+                <label class="field-label">Email</label>
+                <InputText @bind-Value="model.Email" class="field-input" placeholder="you@example.com" autocomplete="email" />
+                <ValidationMessage For="() => model.Email" />
+            </div>
+            <div class="field" style="margin-bottom:24px">
+                <label class="field-label">Пароль</label>
+                <InputText @bind-Value="model.Password" type="password" class="field-input" placeholder="Минимум 6 символов" autocomplete="new-password" />
+                <ValidationMessage For="() => model.Password" />
+            </div>
+
+            @if (error is not null)
+            {
+                <p class="validation-message" style="margin-bottom:12px">@error</p>
+            }
+
+            <button type="submit" class="btn btn-accent btn-full">Создать аккаунт</button>
+        </EditForm>
+
+        <p class="auth-link">Уже есть аккаунт? <a href="/login">Войти</a></p>
+    </div>
+</div>
+
+<style>
+    .auth-wrapper { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .auth-card { width: 100%; max-width: 400px; }
+    .auth-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 24px; }
+    .auth-link { margin-top: 16px; font-size: 0.8rem; color: var(--color-text-secondary); text-align: center; }
+    .auth-link a { color: var(--color-accent); text-decoration: none; }
+</style>
+
+@code {
+    [SupplyParameterFromForm] private RegisterModel model { get; set; } = new();
+    private string? error;
+
+    private async Task HandleRegister()
+    {
+        error = null;
+        var user = new AppUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            DisplayName = model.DisplayName
+        };
+        var result = await UserManager.CreateAsync(user, model.Password);
+        if (!result.Succeeded)
+        {
+            error = string.Join(" ", result.Errors.Select(e => e.Description));
+            return;
+        }
+        await SignInManager.SignInAsync(user, isPersistent: true);
+        Nav.NavigateTo("/", forceLoad: true);
+    }
+
+    private sealed class RegisterModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        public string DisplayName { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MinLength(6)]
+        public string Password { get; set; } = string.Empty;
+    }
+}
