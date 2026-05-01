@@ -2,6 +2,7 @@
 @using Ai.WebUI.Database
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.EntityFrameworkCore
+@implements IDisposable
 @inject AppDbContext Db
 @inject AuthenticationStateProvider AuthState
 @inject NavigationManager Nav
@@ -112,7 +113,35 @@
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync();
+
+        ParseCurrentRoute(Nav.Uri);
+        Nav.LocationChanged += OnLocationChanged;
     }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        ParseCurrentRoute(e.Location);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ParseCurrentRoute(string uri)
+    {
+        var path = new Uri(uri).AbsolutePath;
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        currentProjectId = null;
+        currentChatId = null;
+
+        if (segments.Length >= 2 && segments[0] == "projects" && Guid.TryParse(segments[1], out var pid))
+            currentProjectId = pid;
+        else if (segments.Length >= 2 && segments[0] == "chat" && Guid.TryParse(segments[1], out var cid))
+        {
+            currentChatId = cid;
+            currentProjectId = projects.FirstOrDefault(p => p.Chats.Any(c => c.Id == cid))?.Id;
+        }
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
 
     private void ToggleCollapse() => collapsed = !collapsed;
 }
