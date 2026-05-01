@@ -1,0 +1,146 @@
+@* Ai.WebUI/Components/Shared/CreateProjectModal.razor *@
+@using Ai.WebUI.Database
+@using Ai.WebUI.Database.Entities
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<MyDbContext> DbFactory
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Nav
+
+@if (IsOpen)
+{
+    <div class="modal-overlay" @onclick="Close">
+        <div class="modal" @onclick:stopPropagation>
+            <h2 class="modal-title">Новый проект</h2>
+
+            <div class="form-group">
+                <label class="field-label">Название</label>
+                <input class="field-input" @bind="name" @bind:event="oninput"
+                       placeholder="Название проекта" maxlength="100" @onkeydown="HandleKey" />
+                @if (nameError is not null)
+                {
+                    <span class="field-error">@nameError</span>
+                }
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">
+                    Описание <span style="color:var(--color-text-muted)">(необязательно)</span>
+                </label>
+                <textarea class="field-input" @bind="description" rows="2"
+                          maxlength="500" placeholder="Краткое описание..." />
+            </div>
+
+            @if (submitError is not null)
+            {
+                <div class="error-banner">@submitError</div>
+            }
+
+            <div class="modal-actions">
+                <button class="btn btn-accent" @onclick="Submit" disabled="@isLoading">
+                    @(isLoading ? "Создаю..." : "Создать")
+                </button>
+                <button class="btn btn-ghost" @onclick="Close" disabled="@isLoading">Отмена</button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .modal-overlay {
+        position: fixed; inset: 0; z-index: 1000;
+        background: rgba(0,0,0,0.6);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .modal {
+        background: var(--color-panel);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-raised);
+        padding: 24px; width: 400px; max-width: 90vw;
+        display: flex; flex-direction: column; gap: 16px;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-primary); margin: 0; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label { font-size: 0.8rem; color: var(--color-text-secondary); }
+    .field-error { font-size: 0.75rem; color: var(--color-log-error); }
+    .error-banner {
+        padding: 8px 12px; border-radius: var(--radius-sm);
+        background: rgba(239,68,68,0.1); color: var(--color-log-error);
+        font-size: 0.8rem;
+    }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+</style>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+    private string name = string.Empty;
+    private string? description;
+    private string? nameError;
+    private string? submitError;
+    private bool isLoading;
+
+    private void Close()
+    {
+        if (isLoading) return;
+        name = string.Empty;
+        description = null;
+        nameError = null;
+        submitError = null;
+        OnClose.InvokeAsync();
+    }
+
+    private async Task HandleKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await Submit();
+        if (e.Key == "Escape") Close();
+    }
+
+    private async Task Submit()
+    {
+        nameError = null;
+        submitError = null;
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            nameError = "Название обязательно";
+            return;
+        }
+
+        isLoading = true;
+        try
+        {
+            var auth = await AuthState.GetAuthenticationStateAsync();
+            var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userId is null)
+            {
+                submitError = "Ошибка авторизации";
+                return;
+            }
+
+            await using var db = DbFactory.CreateDbContext();
+            var project = new Project
+            {
+                Name = name.Trim(),
+                Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
+                UserId = userId
+            };
+            db.Projects.Add(project);
+            var chat = new Chat { Title = "Новый чат", ProjectId = project.Id, UserId = userId };
+            db.Chats.Add(chat);
+            await db.SaveChangesAsync();
+
+            await OnCreated.InvokeAsync();
+            Nav.NavigateTo("/chat/" + chat.Id);
+        }
+        catch (Exception)
+        {
+            submitError = "Не удалось создать проект. Попробуй ещё раз.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

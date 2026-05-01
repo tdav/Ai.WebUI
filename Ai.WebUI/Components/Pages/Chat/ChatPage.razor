@@ -45,8 +45,11 @@ else
         </div>
 
         <div class="chat-bottom">
-            <DocumentUpload ChatId="chat.Id" UserId="@userId" OnDocumentsChanged="OnDocsChanged" />
-            <ChatInput OnSend="HandleSend" Disabled="@isStreaming" />
+            <ChatInput OnSend="HandleSend"
+                       Disabled="@isStreaming"
+                       ChatId="chat.Id"
+                       UserId="@userId"
+                       OnDocumentsChanged="OnDocsChanged" />
         </div>
     </div>
 }
