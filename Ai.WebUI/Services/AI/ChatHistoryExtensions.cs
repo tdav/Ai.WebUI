@@ -11,7 +11,7 @@ public static class ChatHistoryExtensions
 
     public static string ToJson(this ChatHistory history) =>
         JsonSerializer.Serialize(
-            history.Select(m => new ChatMessageDto(m.Role.Label, m.Content ?? string.Empty)));
+            history.Select(m => new ChatMessageDto(m.Role.Label ?? string.Empty, m.Content ?? string.Empty)));
 
     public static ChatHistory ToChatHistory(this string json)
     {
@@ -24,6 +24,7 @@ public static class ChatHistoryExtensions
                 case "user": history.AddUserMessage(dto.Content); break;
                 case "assistant": history.AddAssistantMessage(dto.Content); break;
                 case "system": history.AddSystemMessage(dto.Content); break;
+                default: break;
             }
         }
         return history;
