@@ -15,6 +15,7 @@ public static class ChatHistoryExtensions
 
     public static ChatHistory ToChatHistory(this string json)
     {
+        if (string.IsNullOrWhiteSpace(json)) return new ChatHistory();
         var dtos = JsonSerializer.Deserialize<List<ChatMessageDto>>(json, JsonOptions) ?? [];
         var history = new ChatHistory();
         foreach (var dto in dtos)
