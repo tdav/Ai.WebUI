@@ -1,0 +1,184 @@
+@* Ai.WebUI/Components/Pages/Chat/ChatPage.razor *@
+@page "/chat/{chatId:guid}"
+@attribute [Authorize]
+@implements IDisposable
+@using Ai.WebUI.Database
+@using Ai.WebUI.Services.AI
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.SemanticKernel.ChatCompletion
+@inject AppDbContext Db
+@inject OllamaChatService OllamaChat
+@inject Ai.WebUI.Services.AI.IHistoryReducer HistoryReducer
+@inject AuthenticationStateProvider AuthState
+
+<PageTitle>@(chat?.Title ?? "Чат") — Ai.WebUI</PageTitle>
+
+@if (chat is null)
+{
+    <p style="color:var(--color-text-secondary)">Загрузка...</p>
+}
+else
+{
+    <div class="chat-page">
+        <div class="chat-header">
+            @if (editingTitle)
+            {
+                <input class="field-input" style="max-width:320px"
+                       @bind="chat.Title" @onblur="SaveTitle" @onkeydown="HandleTitleKey" />
+            }
+            else
+            {
+                <h1 class="chat-title" @onclick="() => editingTitle = true">@chat.Title</h1>
+            }
+            <ModelSelector @bind-SelectedModel="chat.ModelId" />
+        </div>
+
+        <div class="messages-area" @ref="messagesRef">
+            @foreach (var msg in history)
+            {
+                <MessageBubble Role="@msg.Role.Label" Content="@(msg.Content ?? string.Empty)" />
+            }
+            @if (isStreaming)
+            {
+                <MessageBubble Role="assistant" Content="@streamingText" IsStreaming="true" />
+            }
+        </div>
+
+        <div class="chat-bottom">
+            <DocumentUpload ChatId="chat.Id" UserId="@userId" OnDocumentsChanged="OnDocsChanged" />
+            <ChatInput OnSend="HandleSend" Disabled="@isStreaming" />
+        </div>
+    </div>
+}
+
+<style>
+    .chat-page {
+        display: flex; flex-direction: column;
+        height: calc(100vh - 48px);
+    }
+    .chat-header {
+        display: flex; align-items: center; gap: 16px;
+        padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 8px;
+    }
+    .chat-title {
+        font-size: 1.25rem; font-weight: 500; cursor: pointer;
+        color: var(--color-text-primary);
+    }
+    .messages-area {
+        flex: 1; overflow-y: auto; padding: 8px 0;
+    }
+    .chat-bottom { flex-shrink: 0; }
+</style>
+
+@code {
+    [Parameter] public Guid ChatId { get; set; }
+
+    private Database.Entities.Chat? chat;
+    private ChatHistory history = new();
+    private List<Database.Entities.Document> chatDocs = [];
+
+    private string streamingText = string.Empty;
+    private bool isStreaming;
+    private bool editingTitle;
+    private string userId = string.Empty;
+
+    private ElementReference messagesRef;
+    private CancellationTokenSource cts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+
+        chat = await Db.Chats
+            .Include(c => c.Documents)
+            .FirstOrDefaultAsync(c => c.Id == ChatId);
+
+        if (chat is null) return;
+
+        chatDocs = chat.Documents.ToList();
+        history = chat.ChatHistoryJson.ToChatHistory();
+    }
+
+    private async Task HandleSend(string userMessage)
+    {
+        if (chat is null) return;
+
+        isStreaming = true;
+        streamingText = string.Empty;
+
+        history.AddUserMessage(userMessage);
+
+        if (chatDocs.Count > 0)
+        {
+            var docsContext = string.Join("\n\n---\n\n",
+                chatDocs.Select(d => $"[{d.FileName}]\n{d.ExtractedText}"));
+            var enriched = new ChatHistory();
+            enriched.AddSystemMessage($"Контекст из прикреплённых документов:\n{docsContext}");
+            foreach (var m in history) enriched.Add(m);
+
+            await StreamResponse(enriched);
+        }
+        else
+        {
+            await StreamResponse(history);
+        }
+    }
+
+    private async Task StreamResponse(ChatHistory activeHistory)
+    {
+        if (chat is null) return;
+
+        var reduced = await HistoryReducer.ReduceAsync(activeHistory, cts.Token);
+        if (reduced is not null)
+        {
+            history = new ChatHistory();
+            foreach (var m in reduced) history.Add(m);
+            activeHistory = history;
+        }
+
+        try
+        {
+            await foreach (var token in OllamaChat.StreamAsync(activeHistory, chat.ModelId, cts.Token))
+            {
+                streamingText += token;
+                await InvokeAsync(StateHasChanged);
+            }
+
+            history.AddAssistantMessage(streamingText);
+            chat.ChatHistoryJson = history.ToJson();
+            chat.TotalTokens = history.EstimateTokens();
+            chat.UpdatedAt = DateTime.UtcNow;
+            await Db.SaveChangesAsync();
+        }
+        catch (OperationCanceledException) { }
+        finally
+        {
+            isStreaming = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SaveTitle()
+    {
+        editingTitle = false;
+        if (chat is null) return;
+        chat.UpdatedAt = DateTime.UtcNow;
+        await Db.SaveChangesAsync();
+    }
+
+    private async Task HandleTitleKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await SaveTitle();
+        if (e.Key == "Escape") editingTitle = false;
+    }
+
+    private void OnDocsChanged(List<Database.Entities.Document> docs) => chatDocs = docs;
+
+    public void Dispose()
+    {
+        cts.Cancel();
+        cts.Dispose();
+    }
+}
