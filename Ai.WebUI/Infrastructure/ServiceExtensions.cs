@@ -1,4 +1,5 @@
 using Ai.WebUI.Database;
+using Ai.WebUI.Services.AI;
 using Ai.WebUI.Database.Entities;
 using Ai.WebUI.DataFormats;
 using Microsoft.AspNetCore.Identity;
