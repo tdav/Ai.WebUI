@@ -14,7 +14,7 @@
      @ondrop:preventDefault
      @ondrop="HandleDrop">
 
-    @if (attachedDocs.Count > 0)
+    @if (attachedDocs.Count > 0 || failedChips.Count > 0)
     {
         <div class="doc-chips">
             @foreach (var doc in attachedDocs)
@@ -22,6 +22,14 @@
                 <div class="doc-chip">
                     <span class="doc-chip-name">@doc.FileName</span>
                     <button class="doc-chip-remove" @onclick="() => RemoveDoc(doc)">×</button>
+                </div>
+            }
+            @foreach (var chip in failedChips)
+            {
+                <div class="doc-chip doc-chip--error">
+                    <span class="doc-chip-name">@chip.FileName</span>
+                    <span class="doc-chip-error-icon" title="@chip.Error">⚠</span>
+                    <button class="doc-chip-remove" @onclick="() => failedChips.Remove(chip)">×</button>
                 </div>
             }
         </div>
@@ -73,6 +81,13 @@
         padding: 0;
     }
     .doc-chip-remove:hover { color: var(--color-log-error); }
+    .doc-chip--error {
+        border: 1px solid rgba(239,68,68,0.3);
+        background: rgba(239,68,68,0.08);
+    }
+    .doc-chip-error-icon {
+        color: var(--color-log-error); font-size: 0.75rem; cursor: help;
+    }
     .upload-error {
         font-size: 0.75rem; color: var(--color-log-error);
         padding: 4px 8px; background: rgba(239,68,68,0.08);
@@ -113,8 +128,11 @@
     [Parameter, EditorRequired] public string UserId { get; set; } = string.Empty;
     [Parameter] public EventCallback<List<Document>> OnDocumentsChanged { get; set; }
 
+    private sealed record FailedChip(string FileName, string Error);
+
     private string text = string.Empty;
     private List<Document> attachedDocs = [];
+    private List<FailedChip> failedChips = [];
     private bool isDragOver;
     private string? uploadError;
 
@@ -158,7 +176,7 @@
             catch (Exception ex)
             {
                 logger.LogError(ex, "Ошибка при обработке файла {FileName}", file.Name);
-                uploadError = $"Ошибка при обработке файла: {file.Name}";
+                failedChips.Add(new FailedChip(file.Name, "Ошибка при обработке файла"));
             }
         }
         await db.SaveChangesAsync();
@@ -168,12 +186,19 @@
 
     private async Task RemoveDoc(Document doc)
     {
-        await using var db = DbFactory.CreateDbContext();
-        var existing = await db.Documents.FindAsync(doc.Id);
-        if (existing is not null) db.Documents.Remove(existing);
-        attachedDocs.Remove(doc);
-        await db.SaveChangesAsync();
-        await OnDocumentsChanged.InvokeAsync(attachedDocs.ToList());
+        try
+        {
+            await using var db = DbFactory.CreateDbContext();
+            var existing = await db.Documents.FindAsync(doc.Id);
+            if (existing is not null) db.Documents.Remove(existing);
+            await db.SaveChangesAsync();
+            attachedDocs.Remove(doc);
+            await OnDocumentsChanged.InvokeAsync(attachedDocs.ToList());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при удалении файла {FileName}", doc.FileName);
+        }
     }
 
     private async Task HandleKey(KeyboardEventArgs e)
