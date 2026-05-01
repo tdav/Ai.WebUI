@@ -1,23 +1,100 @@
 @* Ai.WebUI/Components/Shared/ChatInput.razor *@
+@using Ai.WebUI.Database
+@using Ai.WebUI.Database.Entities
+@using Ai.WebUI.Services
+@using Microsoft.EntityFrameworkCore
+@inject DocumentService DocService
+@inject IDbContextFactory<MyDbContext> DbFactory
 
-<div class="chat-input-bar">
-    <textarea class="chat-textarea field-input"
-              @bind="text"
-              @bind:event="oninput"
-              @onkeydown="HandleKey"
-              placeholder="Введите сообщение... (Enter — отправить, Shift+Enter — новая строка)"
-              rows="1"
-              disabled="@Disabled" />
-    <button class="btn btn-accent" @onclick="Send" disabled="@(Disabled || string.IsNullOrWhiteSpace(text))">
-        ↑
-    </button>
+<div class="chat-input-wrapper"
+     @ondragover:preventDefault
+     @ondragover="() => isDragOver = true"
+     @ondragleave="() => isDragOver = false"
+     @ondrop:preventDefault
+     @ondrop="HandleDrop">
+
+    @if (attachedDocs.Count > 0)
+    {
+        <div class="doc-chips">
+            @foreach (var doc in attachedDocs)
+            {
+                <div class="doc-chip">
+                    <span class="doc-chip-name">@doc.FileName</span>
+                    <button class="doc-chip-remove" @onclick="() => RemoveDoc(doc)">×</button>
+                </div>
+            }
+        </div>
+    }
+
+    @if (uploadError is not null)
+    {
+        <div class="upload-error">@uploadError</div>
+    }
+
+    <div class="chat-input-bar @(isDragOver ? "chat-input-bar--dragover" : "")">
+        <label class="attach-btn" title="Прикрепить файл">
+            📎
+            <InputFile OnChange="HandleFileSelected" multiple
+                       accept=".pdf,.txt,.md,.docx,.xlsx,.pptx"
+                       class="attach-input" />
+        </label>
+        <textarea class="chat-textarea field-input"
+                  @bind="text"
+                  @bind:event="oninput"
+                  @onkeydown="HandleKey"
+                  placeholder="Введите сообщение... (Enter — отправить, Shift+Enter — новая строка)"
+                  rows="1"
+                  disabled="@Disabled" />
+        <button class="btn btn-accent"
+                @onclick="Send"
+                disabled="@(Disabled || string.IsNullOrWhiteSpace(text))">
+            ↑
+        </button>
+    </div>
 </div>
 
 <style>
+    .chat-input-wrapper {
+        display: flex; flex-direction: column; gap: 6px;
+    }
+    .doc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .doc-chip {
+        display: flex; align-items: center; gap: 6px;
+        padding: 4px 10px; border-radius: 999px;
+        background: var(--color-surface); font-size: 0.75rem;
+        color: var(--color-text-secondary);
+        box-shadow: var(--shadow-inset-sm);
+    }
+    .doc-chip-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc-chip-remove {
+        background: none; border: none; cursor: pointer;
+        color: var(--color-text-muted); font-size: 1rem; line-height: 1;
+        padding: 0;
+    }
+    .doc-chip-remove:hover { color: var(--color-log-error); }
+    .upload-error {
+        font-size: 0.75rem; color: var(--color-log-error);
+        padding: 4px 8px; background: rgba(239,68,68,0.08);
+        border-radius: var(--radius-sm);
+    }
     .chat-input-bar {
         display: flex; gap: 8px; align-items: flex-end;
         padding: 12px 0;
         border-top: 1px solid rgba(255,255,255,0.05);
+        transition: border-color 150ms;
+    }
+    .chat-input-bar--dragover { border-color: var(--color-accent); }
+    .attach-btn {
+        position: relative; cursor: pointer;
+        color: var(--color-text-muted); font-size: 1.15rem;
+        line-height: 1; flex-shrink: 0;
+        transition: color 150ms;
+        padding-bottom: 4px;
+    }
+    .attach-btn:hover { color: var(--color-accent); }
+    .attach-input {
+        position: absolute; inset: 0; opacity: 0;
+        cursor: pointer; width: 100%; height: 100%;
     }
     .chat-textarea {
         flex: 1; resize: none; height: auto;
@@ -31,8 +108,69 @@
 @code {
     [Parameter] public EventCallback<string> OnSend { get; set; }
     [Parameter] public bool Disabled { get; set; }
+    [Parameter, EditorRequired] public Guid ChatId { get; set; }
+    [Parameter, EditorRequired] public string UserId { get; set; } = string.Empty;
+    [Parameter] public EventCallback<List<Document>> OnDocumentsChanged { get; set; }
 
     private string text = string.Empty;
+    private List<Document> attachedDocs = [];
+    private bool isDragOver;
+    private string? uploadError;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e) =>
+        await ProcessFiles(e.GetMultipleFiles());
+
+    private Task HandleDrop(DragEventArgs e)
+    {
+        isDragOver = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task ProcessFiles(IReadOnlyList<IBrowserFile> files)
+    {
+        uploadError = null;
+        await using var db = DbFactory.CreateDbContext();
+        foreach (var file in files)
+        {
+            if (!DocService.IsSupported(file.ContentType))
+            {
+                uploadError = $"Формат не поддерживается: {file.Name}";
+                continue;
+            }
+
+            try
+            {
+                var extractedText = await DocService.ExtractTextAsync(file);
+                var doc = new Document
+                {
+                    FileName = file.Name,
+                    ContentType = file.ContentType,
+                    FilePath = string.Empty,
+                    ExtractedText = extractedText,
+                    ChatId = ChatId,
+                    UserId = UserId
+                };
+                db.Documents.Add(doc);
+                attachedDocs.Add(doc);
+            }
+            catch (Exception)
+            {
+                uploadError = $"Ошибка при обработке файла: {file.Name}";
+            }
+        }
+        await db.SaveChangesAsync();
+        await OnDocumentsChanged.InvokeAsync(attachedDocs);
+    }
+
+    private async Task RemoveDoc(Document doc)
+    {
+        await using var db = DbFactory.CreateDbContext();
+        var existing = await db.Documents.FindAsync(doc.Id);
+        if (existing is not null) db.Documents.Remove(existing);
+        attachedDocs.Remove(doc);
+        await db.SaveChangesAsync();
+        await OnDocumentsChanged.InvokeAsync(attachedDocs);
+    }
 
     private async Task HandleKey(KeyboardEventArgs e)
     {
