@@ -2,8 +2,9 @@
 @page "/"
 @attribute [Authorize]
 @using Ai.WebUI.Database
+@using Ai.WebUI.Database.Entities
 @using Microsoft.EntityFrameworkCore
-@inject MyDbContext Db
+@inject IDbContextFactory<MyDbContext> DbFactory
 @inject AuthenticationStateProvider AuthState
 @inject NavigationManager Nav
 
@@ -12,7 +13,7 @@
 <div style="max-width:800px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
         <h1 style="font-size:1.5rem;font-weight:600">Проекты</h1>
-        <button class="btn btn-accent" @onclick="CreateProject">+ Новый проект</button>
+        <button class="btn btn-accent" @onclick="() => showCreateModal = true">+ Новый проект</button>
     </div>
 
     @if (projects.Count == 0)
@@ -45,6 +46,10 @@
     }
 </div>
 
+<CreateProjectModal IsOpen="showCreateModal"
+                    OnClose="() => showCreateModal = false"
+                    OnCreated="OnProjectCreated" />
+
 <style>
     .project-card { cursor: pointer; transition: box-shadow 150ms; }
     .project-card:hover { box-shadow: var(--shadow-flat); }
@@ -52,6 +57,7 @@
 
 @code {
     private List<Project> projects = [];
+    private bool showCreateModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,27 +65,19 @@
         var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId is null) return;
 
-        projects = await Db.Projects
+        await using var db = DbFactory.CreateDbContext();
+        projects = await db.Projects
             .Include(p => p.Chats)
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync();
     }
 
-    private void OpenProject(Guid id)
-    {
-        Nav.NavigateTo("/projects/" + id);
-    }
+    private void OpenProject(Guid id) => Nav.NavigateTo("/projects/" + id);
 
-    private async Task CreateProject()
+    private async Task OnProjectCreated()
     {
-        var auth = await AuthState.GetAuthenticationStateAsync();
-        var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        if (userId is null) return;
-
-        var project = new Project { Name = "Новый проект", UserId = userId };
-        Db.Projects.Add(project);
-        await Db.SaveChangesAsync();
-        Nav.NavigateTo("/projects/" + project.Id);
+        showCreateModal = false;
+        // Navigation already happened inside CreateProjectModal
     }
 }
