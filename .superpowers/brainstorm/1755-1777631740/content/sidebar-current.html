@@ -1,0 +1,90 @@
+<h2>Текущее состояние сайдбара</h2>
+<p class="subtitle">Покажи что сейчас не так — отмечь проблемные элементы</p>
+
+<div class="section">
+  <div style="display:flex;gap:32px;align-items:flex-start">
+
+    <!-- Mockup сайдбара -->
+    <div style="width:260px;background:#1a1d23;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);flex-shrink:0">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <span style="font-weight:600;color:#e2e8f0;font-size:0.95rem">Ai.WebUI</span>
+        <button style="background:none;border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:0.8rem">‹</button>
+      </div>
+
+      <!-- + Проект кнопка -->
+      <div style="padding:12px 16px">
+        <a style="display:block;text-align:center;background:#6366f1;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:500">+ Проект</a>
+      </div>
+
+      <!-- Список проектов -->
+      <div style="padding:0 8px">
+        <div style="padding:8px;border-radius:8px;background:rgba(99,102,241,0.12)">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
+            <span style="color:#818cf8;font-weight:500;font-size:0.9rem">Проект Alpha</span>
+            <span style="background:#0f1117;padding:2px 6px;border-radius:999px;font-size:0.65rem;color:#64748b">3</span>
+          </div>
+          <!-- Чаты проекта -->
+          <a style="display:block;padding:5px 6px 5px 18px;font-size:0.78rem;color:#818cf8;background:rgba(99,102,241,0.15);border-radius:5px;text-decoration:none;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">→ Анализ данных</a>
+          <a style="display:block;padding:5px 6px 5px 18px;font-size:0.78rem;color:#64748b;text-decoration:none;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">→ Рефакторинг кода</a>
+          <a style="display:block;padding:5px 6px 5px 18px;font-size:0.78rem;color:#64748b;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">→ Документация</a>
+        </div>
+
+        <div style="padding:8px;border-radius:8px;margin-top:4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0">
+            <span style="color:#94a3b8;font-weight:500;font-size:0.9rem">Проект Beta</span>
+            <span style="background:#0f1117;padding:2px 6px;border-radius:999px;font-size:0.65rem;color:#64748b">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer — Выйти -->
+      <div style="margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.05);margin-top:40px">
+        <button style="background:none;border:none;color:#64748b;cursor:pointer;font-size:0.85rem;padding:0">Выйти</button>
+      </div>
+    </div>
+
+    <!-- Список проблем -->
+    <div style="flex:1">
+      <h3>Что я вижу сейчас (проблемы)</h3>
+      <div class="options" data-multiselect>
+        <div class="option" data-choice="p1" onclick="toggleSelect(this)">
+          <div class="letter">1</div>
+          <div class="content">
+            <h3>«+ Проект» ведёт на страницу списка, не создаёт</h3>
+            <p>Кнопка в сайдбаре — href="/", а не создание. Лишний клик.</p>
+          </div>
+        </div>
+        <div class="option" data-choice="p2" onclick="toggleSelect(this)">
+          <div class="letter">2</div>
+          <div class="content">
+            <h3>Нет «+ Новый чат» в сайдбаре</h3>
+            <p>Чтобы создать чат нужно идти на страницу проекта.</p>
+          </div>
+        </div>
+        <div class="option" data-choice="p3" onclick="toggleSelect(this)">
+          <div class="letter">3</div>
+          <div class="content">
+            <h3>«Выйти» — голый текст, без иконки</h3>
+            <p>Внизу теряется, не очевидно что это кнопка выхода.</p>
+          </div>
+        </div>
+        <div class="option" data-choice="p4" onclick="toggleSelect(this)">
+          <div class="letter">4</div>
+          <div class="content">
+            <h3>Свёрнутый sidebar полностью пустой</h3>
+            <p>В collapsed-режиме нет никаких иконок — ни проектов, ни действий.</p>
+          </div>
+        </div>
+        <div class="option" data-choice="p5" onclick="toggleSelect(this)">
+          <div class="letter">5</div>
+          <div class="content">
+            <h3>Другая проблема</h3>
+            <p>Напиши в терминале что именно не так.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

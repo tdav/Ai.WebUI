@@ -57,6 +57,10 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : IdentityDbCont
     {
         //base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.MigrationsUserTransactionWarning));
+        optionsBuilder.ConfigureWarnings(w =>
+        {
+            w.Ignore(RelationalEventId.MigrationsUserTransactionWarning);
+            w.Ignore(RelationalEventId.PendingModelChangesWarning);
+        });
     }
 }

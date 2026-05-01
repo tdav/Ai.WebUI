@@ -1,0 +1,92 @@
+<h2>Как должно выглядеть прикрепление файла?</h2>
+<p class="subtitle">Сейчас: отдельный блок drag-and-drop над полем ввода, всегда виден. Пайплайн уже работает: файл → ExtractTextAsync → текст вставляется в контекст чата.</p>
+
+<div class="cards">
+
+  <!-- Вариант A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px">
+      <div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;text-align:center">Скрепка внутри панели ввода</div>
+      <div style="background:#1a1d23;border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.08)">
+        <!-- Прикреплённые файлы chips — появляются над полем -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+          <div style="background:#1e2330;border:1px solid #374151;border-radius:999px;padding:3px 10px;font-size:0.68rem;color:#94a3b8;display:flex;align-items:center;gap:5px">
+            <span style="color:#6366f1">📄</span> report.pdf <span style="color:#4b5563;cursor:pointer">×</span>
+          </div>
+          <div style="background:#1e2330;border:1px solid #374151;border-radius:999px;padding:3px 10px;font-size:0.68rem;color:#94a3b8;display:flex;align-items:center;gap:5px">
+            <span style="color:#6366f1">📝</span> notes.md <span style="color:#4b5563;cursor:pointer">×</span>
+          </div>
+        </div>
+        <!-- Input bar с кнопкой скрепки -->
+        <div style="display:flex;gap:8px;align-items:flex-end;background:#0f1117;border-radius:8px;padding:8px 10px;border:1px solid #374151">
+          <button style="background:none;border:none;color:#64748b;font-size:1.1rem;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Прикрепить файл">📎</button>
+          <div style="flex:1;color:#475569;font-size:0.82rem;padding:2px 0">Введите сообщение...</div>
+          <button style="background:#6366f1;color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:0.8rem;cursor:pointer;flex-shrink:0">↑</button>
+        </div>
+      </div>
+      <div style="font-size:0.68rem;color:#374151;text-align:center;margin-top:6px">drag-and-drop тоже работает</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Скрепка в строке ввода</h3>
+      <p>📎 открывает file picker. Прикреплённые файлы — chips над полем. Drag-and-drop на всю область чата. Компактно, не занимает место когда не нужно.</p>
+    </div>
+  </div>
+
+  <!-- Вариант B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px">
+      <div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;text-align:center">Компактная зона + кнопка</div>
+      <div style="background:#1a1d23;border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.08)">
+        <!-- Компактная зона -->
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#0f1117;border-radius:6px;margin-bottom:6px;border:1px dashed #374151">
+          <span style="color:#4b5563;font-size:0.8rem">📎</span>
+          <span style="color:#4b5563;font-size:0.72rem">Перетащите файл или</span>
+          <button style="background:none;border:none;color:#6366f1;font-size:0.72rem;cursor:pointer;padding:0;text-decoration:underline">выберите</button>
+          <div style="margin-left:auto;display:flex;gap:4px">
+            <div style="background:#1e2330;border-radius:999px;padding:2px 8px;font-size:0.65rem;color:#94a3b8">report.pdf ×</div>
+          </div>
+        </div>
+        <!-- Input -->
+        <div style="display:flex;gap:8px;align-items:flex-end;background:#0f1117;border-radius:8px;padding:8px 10px;border:1px solid #374151">
+          <div style="flex:1;color:#475569;font-size:0.82rem;padding:2px 0">Введите сообщение...</div>
+          <button style="background:#6366f1;color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:0.8rem;cursor:pointer">↑</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Компактная зона сверху</h3>
+      <p>Полоска с drag-and-drop и кнопкой «выберите» постоянно видна, но занимает одну строку. Файлы отображаются прямо в ней.</p>
+    </div>
+  </div>
+
+  <!-- Вариант C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px">
+      <div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;text-align:center">Файлы inline в поле ввода (как в ChatGPT)</div>
+      <div style="background:#1a1d23;border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.08)">
+        <!-- Поле ввода с chips внутри -->
+        <div style="background:#0f1117;border-radius:8px;padding:8px 10px;border:1px solid #374151">
+          <!-- Chips внутри поля -->
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+            <div style="background:#1e2330;border:1px solid #374151;border-radius:6px;padding:4px 8px;font-size:0.68rem;color:#94a3b8;display:flex;align-items:center;gap:4px">
+              <span style="color:#6366f1;font-size:0.75rem">📄</span>
+              <span>report.pdf</span>
+              <span style="color:#374151;font-size:0.6rem">12кб</span>
+              <span style="color:#4b5563;cursor:pointer;margin-left:2px">×</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:8px">
+            <button style="background:none;border:none;color:#64748b;font-size:1.05rem;cursor:pointer;padding:0;flex-shrink:0">📎</button>
+            <div style="flex:1;color:#475569;font-size:0.82rem">Что хочешь узнать из файла?</div>
+            <button style="background:#6366f1;color:#fff;border:none;padding:6px 10px;border-radius:6px;font-size:0.8rem;cursor:pointer">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Inline внутри поля ввода</h3>
+      <p>Все файлы и скрепка внутри единого блока ввода — как в ChatGPT/Claude. Когда файлов нет, скрепка лежит рядом с полем. Максимально компактно.</p>
+    </div>
+  </div>
+
+</div>

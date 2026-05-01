@@ -1,0 +1,102 @@
+<h2>Где разместить «+ Новый чат»?</h2>
+<p class="subtitle">Выбери вариант расположения кнопки создания чата в сайдбаре</p>
+
+<div class="cards">
+
+  <!-- Вариант A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:12px">
+      <div style="width:220px;margin:0 auto;background:#1a1d23;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+        <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center">
+          <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600">Ai.WebUI</span>
+          <span style="color:#64748b;font-size:0.75rem">‹</span>
+        </div>
+        <div style="padding:8px">
+          <!-- Header actions row -->
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <button style="flex:1;background:#6366f1;color:#fff;border:none;padding:5px;border-radius:6px;font-size:0.72rem;cursor:pointer">+ Проект</button>
+            <button style="flex:1;background:rgba(99,102,241,0.2);color:#818cf8;border:none;padding:5px;border-radius:6px;font-size:0.72rem;cursor:pointer">+ Чат</button>
+          </div>
+          <div style="padding:5px 8px;border-radius:6px;background:rgba(99,102,241,0.12)">
+            <span style="color:#818cf8;font-size:0.78rem;font-weight:500">Проект Alpha</span>
+            <div style="padding-left:10px;margin-top:3px">
+              <div style="font-size:0.7rem;color:#818cf8;padding:2px 0">→ Анализ данных</div>
+              <div style="font-size:0.7rem;color:#475569;padding:2px 0">→ Документация</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Две кнопки вверху</h3>
+      <p>«+ Проект» и «+ Чат» рядом под заголовком. Всегда видны.</p>
+    </div>
+  </div>
+
+  <!-- Вариант B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:12px">
+      <div style="width:220px;margin:0 auto;background:#1a1d23;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+        <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center">
+          <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600">Ai.WebUI</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button style="background:rgba(99,102,241,0.2);color:#818cf8;border:none;padding:3px 8px;border-radius:5px;font-size:0.75rem;cursor:pointer">+ Проект</button>
+            <span style="color:#64748b;font-size:0.75rem">‹</span>
+          </div>
+        </div>
+        <div style="padding:8px">
+          <div style="padding:5px 8px;border-radius:6px;background:rgba(99,102,241,0.12)">
+            <!-- Название проекта + кнопка чата рядом -->
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="color:#818cf8;font-size:0.78rem;font-weight:500">Проект Alpha</span>
+              <button style="background:none;border:none;color:#6366f1;font-size:0.9rem;cursor:pointer;padding:0 2px" title="Новый чат">＋</button>
+            </div>
+            <div style="padding-left:10px;margin-top:3px">
+              <div style="font-size:0.7rem;color:#818cf8;padding:2px 0">→ Анализ данных</div>
+              <div style="font-size:0.7rem;color:#475569;padding:2px 0">→ Документация</div>
+            </div>
+          </div>
+          <div style="padding:5px 8px;border-radius:6px;margin-top:4px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="color:#94a3b8;font-size:0.78rem;font-weight:500">Проект Beta</span>
+              <button style="background:none;border:none;color:#374151;font-size:0.9rem;cursor:pointer;padding:0 2px">＋</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — «＋» рядом с именем проекта</h3>
+      <p>Иконка «＋» появляется у каждого проекта. Контекстно — сразу ясно к чему относится.</p>
+    </div>
+  </div>
+
+  <!-- Вариант C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:12px">
+      <div style="width:220px;margin:0 auto;background:#1a1d23;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+        <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center">
+          <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600">Ai.WebUI</span>
+          <span style="color:#64748b;font-size:0.75rem">‹</span>
+        </div>
+        <div style="padding:8px">
+          <button style="width:100%;background:#6366f1;color:#fff;border:none;padding:6px;border-radius:6px;font-size:0.78rem;cursor:pointer;margin-bottom:8px">+ Новый проект</button>
+          <div style="padding:5px 8px;border-radius:6px;background:rgba(99,102,241,0.12)">
+            <span style="color:#818cf8;font-size:0.78rem;font-weight:500">Проект Alpha</span>
+            <div style="padding-left:10px;margin-top:3px">
+              <div style="font-size:0.7rem;color:#818cf8;padding:2px 0">→ Анализ данных</div>
+              <div style="font-size:0.7rem;color:#475569;padding:2px 0">→ Документация</div>
+              <!-- Кнопка нового чата внутри списка -->
+              <div style="font-size:0.7rem;color:#4b5563;padding:2px 0;border:1px dashed #374151;border-radius:4px;text-align:center;margin-top:3px;cursor:pointer">+ чат</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — «+ чат» внутри раскрытого проекта</h3>
+      <p>Кнопка добавления чата появляется в конце списка чатов активного проекта.</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,81 @@
+<h2>Как создать новый проект?</h2>
+<p class="subtitle">Сейчас: кнопка в сайдбаре ведёт на «/», оттуда нажимаешь «+ Новый проект» → редирект на ProjectDetail → там «+ Новый чат». Много шагов.</p>
+
+<div class="cards">
+
+  <!-- Вариант A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px">
+      <div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;text-align:center">Флоу: 1 клик → сразу в новом чате</div>
+      <div style="display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap">
+        <div style="background:#1e2330;border:1px solid #374151;border-radius:6px;padding:6px 10px;font-size:0.72rem;color:#94a3b8;text-align:center">Клик<br><span style="color:#6366f1">«+ Проект»</span></div>
+        <span style="color:#374151">→</span>
+        <div style="background:#1e2330;border:1px solid #374151;border-radius:6px;padding:6px 10px;font-size:0.72rem;color:#94a3b8;text-align:center">Создаётся проект<br>«Новый проект»</div>
+        <span style="color:#374151">→</span>
+        <div style="background:#1e2330;border:1px solid #374151;border-radius:6px;padding:6px 10px;font-size:0.72rem;color:#94a3b8;text-align:center">Создаётся чат<br>«Новый чат»</div>
+        <span style="color:#374151">→</span>
+        <div style="background:rgba(99,102,241,0.15);border:1px solid #6366f1;border-radius:6px;padding:6px 10px;font-size:0.72rem;color:#818cf8;text-align:center">ChatPage<br>title в фокусе</div>
+      </div>
+      <div style="margin-top:12px;background:#1a1d23;border-radius:6px;padding:10px;font-size:0.72rem;color:#64748b">
+        <div style="color:#94a3b8;margin-bottom:4px">В чате заголовок сразу в режиме редактирования:</div>
+        <div style="background:#0f1117;border-radius:4px;padding:6px 10px;border:1px solid #6366f1;color:#e2e8f0">Новый проект <span style="opacity:0.4">|</span></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 1 клик, сразу в чате</h3>
+      <p>Создаёт проект + чат автоматически, переходит в чат. Название редактируется прямо там. ProjectDetail не нужна как промежуточный шаг.</p>
+    </div>
+  </div>
+
+  <!-- Вариант B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px">
+      <div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;text-align:center">Inline-ввод имени прямо в сайдбаре</div>
+      <div style="width:220px;margin:0 auto;background:#1a1d23;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)">
+        <div style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05)">
+          <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600">Ai.WebUI</span>
+        </div>
+        <div style="padding:8px">
+          <!-- Inline input появляется вверху списка -->
+          <div style="background:rgba(99,102,241,0.1);border:1px solid #6366f1;border-radius:6px;padding:6px 10px;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+            <input style="background:none;border:none;color:#e2e8f0;font-size:0.78rem;outline:none;flex:1" placeholder="Имя проекта..." value="" />
+            <span style="color:#6366f1;font-size:0.72rem">Enter</span>
+          </div>
+          <div style="padding:5px 8px;border-radius:6px">
+            <span style="color:#94a3b8;font-size:0.78rem">Проект Alpha</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Inline поле имени в сайдбаре</h3>
+      <p>После клика «+ Проект» появляется поле ввода прямо в сайдбаре. Enter создаёт и переходит в новый чат.</p>
+    </div>
+  </div>
+
+  <!-- Вариант C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1117;padding:16px;position:relative">
+      <div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;text-align:center">Модальное окно</div>
+      <!-- Затемнение + модалка -->
+      <div style="position:relative;background:#1a1d23;border-radius:8px;overflow:hidden;height:140px;border:1px solid rgba(255,255,255,0.08)">
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center">
+          <div style="background:#1e2330;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;width:200px">
+            <div style="color:#e2e8f0;font-size:0.82rem;font-weight:600;margin-bottom:10px">Новый проект</div>
+            <input style="width:100%;background:#0f1117;border:1px solid #374151;border-radius:5px;color:#e2e8f0;padding:5px 8px;font-size:0.75rem;outline:none;box-sizing:border-box" placeholder="Название..." />
+            <textarea style="width:100%;background:#0f1117;border:1px solid #374151;border-radius:5px;color:#94a3b8;padding:5px 8px;font-size:0.72rem;outline:none;resize:none;margin-top:6px;box-sizing:border-box;height:36px" placeholder="Описание (необязательно)"></textarea>
+            <div style="display:flex;gap:6px;margin-top:8px">
+              <button style="flex:1;background:#6366f1;color:#fff;border:none;padding:5px;border-radius:5px;font-size:0.72rem;cursor:pointer">Создать</button>
+              <button style="background:none;border:1px solid #374151;color:#64748b;padding:5px 8px;border-radius:5px;font-size:0.72rem;cursor:pointer">Отмена</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Модальное окно</h3>
+      <p>Диалог с полями Название + Описание. Полный контроль, но лишний шаг и сложнее.</p>
+    </div>
+  </div>
+
+</div>
