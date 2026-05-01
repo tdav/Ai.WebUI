@@ -4,7 +4,8 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.EntityFrameworkCore
 @implements IDisposable
-@inject MyDbContext Db
+@inject IDbContextFactory<MyDbContext> DbFactory
+@inject ILogger<NavMenu> logger
 @inject AuthenticationStateProvider AuthState
 @inject NavigationManager Nav
 
@@ -58,7 +59,7 @@
                 <a href="/projects/@project.Id"
                    class="nav-project-icon @(currentProjectId == project.Id ? "nav-project-icon--active" : "")"
                    title="@project.Name">
-                    @project.Name[0].ToString().ToUpper()
+                    @(project.Name.Length > 0 ? project.Name[0].ToString().ToUpperInvariant() : "?")
                 </a>
             }
         </div>
@@ -176,7 +177,8 @@
         var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId is null) return;
 
-        projects = await Db.Projects
+        await using var db = DbFactory.CreateDbContext();
+        projects = await db.Projects
             .Include(p => p.Chats)
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.UpdatedAt)
@@ -224,15 +226,16 @@
 
         try
         {
+            await using var db = DbFactory.CreateDbContext();
             var chat = new Chat { Title = "Новый чат", ProjectId = projectId, UserId = userId };
-            Db.Chats.Add(chat);
-            await Db.SaveChangesAsync();
+            db.Chats.Add(chat);
+            await db.SaveChangesAsync();
             await LoadProjects();
             Nav.NavigateTo("/chat/" + chat.Id);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // toast-уведомление об ошибке не реализовано в данной итерации
+            logger.LogError(ex, "Ошибка создания чата для проекта {ProjectId}", projectId);
         }
     }
 
