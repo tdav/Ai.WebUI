@@ -5,6 +5,7 @@
 @using Microsoft.EntityFrameworkCore
 @inject DocumentService DocService
 @inject IDbContextFactory<MyDbContext> DbFactory
+@inject ILogger<ChatInput> logger
 
 <div class="chat-input-wrapper"
      @ondragover:preventDefault
@@ -129,6 +130,7 @@
     private async Task ProcessFiles(IReadOnlyList<IBrowserFile> files)
     {
         uploadError = null;
+        var newDocs = new List<Document>();
         await using var db = DbFactory.CreateDbContext();
         foreach (var file in files)
         {
@@ -151,15 +153,17 @@
                     UserId = UserId
                 };
                 db.Documents.Add(doc);
-                attachedDocs.Add(doc);
+                newDocs.Add(doc);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.LogError(ex, "Ошибка при обработке файла {FileName}", file.Name);
                 uploadError = $"Ошибка при обработке файла: {file.Name}";
             }
         }
         await db.SaveChangesAsync();
-        await OnDocumentsChanged.InvokeAsync(attachedDocs);
+        attachedDocs.AddRange(newDocs);
+        await OnDocumentsChanged.InvokeAsync(attachedDocs.ToList());
     }
 
     private async Task RemoveDoc(Document doc)
@@ -169,7 +173,7 @@
         if (existing is not null) db.Documents.Remove(existing);
         attachedDocs.Remove(doc);
         await db.SaveChangesAsync();
-        await OnDocumentsChanged.InvokeAsync(attachedDocs);
+        await OnDocumentsChanged.InvokeAsync(attachedDocs.ToList());
     }
 
     private async Task HandleKey(KeyboardEventArgs e)
