@@ -2,8 +2,19 @@ using Ai.WebUI.Components;
 using Ai.WebUI.Database.Entities;
 using Ai.WebUI.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(new ConfigurationBuilder()
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+        .Build())
+    .Enrich.FromLogContext()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -35,4 +46,16 @@ app.MapPost("/logout", async (HttpContext context, SignInManager<AppUser> signIn
     return Results.Redirect("/login");
 }).RequireAuthorization();
 
-app.Run();
+try
+{
+    Log.Information("Starting application");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
