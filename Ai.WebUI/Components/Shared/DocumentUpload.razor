@@ -1,8 +1,9 @@
 @* Ai.WebUI/Components/Shared/DocumentUpload.razor *@
 @using Ai.WebUI.Database
 @using Ai.WebUI.Services
+@using Microsoft.EntityFrameworkCore
 @inject DocumentService DocService
-@inject AppDbContext Db
+@inject IDbContextFactory<AppDbContext> DbFactory
 
 <div class="doc-upload @(isDragOver ? "doc-upload--dragover" : "")"
      @ondragover:preventDefault
@@ -77,6 +78,7 @@
 
     private async Task ProcessFiles(IReadOnlyList<IBrowserFile> files)
     {
+        await using var db = DbFactory.CreateDbContext();
         foreach (var file in files)
         {
             if (!DocService.IsSupported(file.ContentType)) continue;
@@ -91,18 +93,19 @@
                 ChatId = ChatId,
                 UserId = UserId
             };
-            Db.Documents.Add(doc);
+            db.Documents.Add(doc);
             documents.Add(doc);
         }
-        await Db.SaveChangesAsync();
+        await db.SaveChangesAsync();
         await OnDocumentsChanged.InvokeAsync(documents);
     }
 
     private async Task RemoveDocument(Database.Entities.Document doc)
     {
-        Db.Documents.Remove(doc);
+        await using var db = DbFactory.CreateDbContext();
+        db.Documents.Remove(doc);
         documents.Remove(doc);
-        await Db.SaveChangesAsync();
+        await db.SaveChangesAsync();
         await OnDocumentsChanged.InvokeAsync(documents);
     }
 }

@@ -69,9 +69,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null) return;
+
         project = await Db.Projects
             .Include(p => p.Chats)
-            .FirstOrDefaultAsync(p => p.Id == ProjectId);
+            .FirstOrDefaultAsync(p => p.Id == ProjectId && p.UserId == userId);
     }
 
     private void OpenChat(Guid id)

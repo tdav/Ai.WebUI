@@ -14,8 +14,9 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        var connStr = configuration.GetConnectionString("DefaultConnection");
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connStr));
+        services.AddDbContextFactory<AppDbContext>(options => options.UseNpgsql(connStr));
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
@@ -46,7 +47,7 @@ public static class ServiceExtensions
 
         services.AddScoped<OllamaChatService>();
         services.AddScoped<IOllamaChatService>(sp => sp.GetRequiredService<OllamaChatService>());
-        services.AddScoped<IChatHistoryReducer, ChatHistoryReducer>();
+        services.AddScoped<IHistoryReducer, ChatHistoryReducer>();
 
         return services;
     }

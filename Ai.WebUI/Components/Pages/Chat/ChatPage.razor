@@ -6,7 +6,7 @@
 @using Ai.WebUI.Services.AI
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.SemanticKernel.ChatCompletion
-@inject AppDbContext Db
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject OllamaChatService OllamaChat
 @inject Ai.WebUI.Services.AI.IHistoryReducer HistoryReducer
 @inject AuthenticationStateProvider AuthState
@@ -91,9 +91,10 @@ else
         var auth = await AuthState.GetAuthenticationStateAsync();
         userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
 
-        chat = await Db.Chats
+        await using var db = DbFactory.CreateDbContext();
+        chat = await db.Chats
             .Include(c => c.Documents)
-            .FirstOrDefaultAsync(c => c.Id == ChatId);
+            .FirstOrDefaultAsync(c => c.Id == ChatId && c.UserId == userId);
 
         if (chat is null) return;
 
@@ -150,7 +151,13 @@ else
             chat.ChatHistoryJson = history.ToJson();
             chat.TotalTokens = history.EstimateTokens();
             chat.UpdatedAt = DateTime.UtcNow;
-            await Db.SaveChangesAsync();
+
+            await using var db = DbFactory.CreateDbContext();
+            db.Chats.Attach(chat);
+            db.Entry(chat).Property(c => c.ChatHistoryJson).IsModified = true;
+            db.Entry(chat).Property(c => c.TotalTokens).IsModified = true;
+            db.Entry(chat).Property(c => c.UpdatedAt).IsModified = true;
+            await db.SaveChangesAsync();
         }
         catch (OperationCanceledException) { }
         finally
@@ -165,7 +172,12 @@ else
         editingTitle = false;
         if (chat is null) return;
         chat.UpdatedAt = DateTime.UtcNow;
-        await Db.SaveChangesAsync();
+
+        await using var db = DbFactory.CreateDbContext();
+        db.Chats.Attach(chat);
+        db.Entry(chat).Property(c => c.Title).IsModified = true;
+        db.Entry(chat).Property(c => c.UpdatedAt).IsModified = true;
+        await db.SaveChangesAsync();
     }
 
     private async Task HandleTitleKey(KeyboardEventArgs e)
