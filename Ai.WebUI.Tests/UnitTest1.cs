@@ -1,10 +1,10 @@
-﻿namespace Ai.WebUI.Tests;
+namespace Ai.WebUI.Tests;
 
+[TestClass]
 public class UnitTest1
 {
-    [Fact]
+    [TestMethod]
     public void Test1()
     {
-
     }
 }

@@ -5,6 +5,7 @@ using Moq;
 
 namespace Ai.WebUI.Tests.Services.AI;
 
+[TestClass]
 public class ChatHistoryReducerTests
 {
     private static IConfiguration BuildConfig(int threshold = 100) =>
@@ -28,7 +29,7 @@ public class ChatHistoryReducerTests
         return h;
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ReduceAsync_WhenUnderThreshold_ReturnsNull()
     {
         var mockChat = new Mock<IOllamaChatService>();
@@ -37,10 +38,10 @@ public class ChatHistoryReducerTests
 
         var result = await reducer.ReduceAsync(history);
 
-        Assert.Null(result);
+        Assert.IsNull(result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ReduceAsync_WhenOverThreshold_ReturnsShorterHistory()
     {
         var mockChat = new Mock<IOllamaChatService>();
@@ -53,13 +54,13 @@ public class ChatHistoryReducerTests
 
         var result = await reducer.ReduceAsync(history);
 
-        Assert.NotNull(result);
+        Assert.IsNotNull(result);
         var list = result.ToList();
-        Assert.True(list.Count < history.Count);
-        Assert.Contains(list, m => m.Content!.Contains("[Summary"));
+        Assert.IsTrue(list.Count < history.Count);
+        Assert.IsTrue(list.Any(m => m.Content!.Contains("[Summary")));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ReduceAsync_WhenOverThreshold_PreservesSystemMessage()
     {
         var mockChat = new Mock<IOllamaChatService>();
@@ -72,7 +73,7 @@ public class ChatHistoryReducerTests
 
         var result = await reducer.ReduceAsync(history);
 
-        Assert.NotNull(result);
-        Assert.Equal(AuthorRole.System, result.First().Role);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(AuthorRole.System, result.First().Role);
     }
 }
