@@ -5,7 +5,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace Ai.WebUI.Services.AI;
 
 public class ChatHistoryReducer(IOllamaChatService chatService, IConfiguration configuration)
-    : IChatHistoryReducer
+    : IHistoryReducer
 {
     private readonly int reduceThreshold =
         configuration.GetValue<int>("ChatHistory:ReduceThreshold", 3000);
