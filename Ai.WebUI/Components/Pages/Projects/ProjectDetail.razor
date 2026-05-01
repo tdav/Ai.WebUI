@@ -1,0 +1,108 @@
+@* Ai.WebUI/Components/Pages/Projects/ProjectDetail.razor *@
+@page "/projects/{projectId:guid}"
+@attribute [Authorize]
+@using Ai.WebUI.Database
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Nav
+
+<PageTitle>@(project?.Name ?? "Проект") — Ai.WebUI</PageTitle>
+
+@if (project is null)
+{
+    <p style="color:var(--color-text-secondary)">Загрузка...</p>
+}
+else
+{
+    <div style="max-width:800px">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+            @if (editingName)
+            {
+                <input class="field-input" style="font-size:1.25rem;max-width:320px"
+                       @bind="project.Name" @onblur="SaveName" @onkeydown="HandleNameKey" />
+            }
+            else
+            {
+                <h1 style="font-size:1.5rem;font-weight:600;cursor:pointer" @onclick="() => editingName = true">
+                    @project.Name
+                </h1>
+            }
+            <button class="btn btn-accent" @onclick="CreateChat">+ Новый чат</button>
+        </div>
+
+        @if (project.Chats.Count == 0)
+        {
+            <div class="card" style="text-align:center;color:var(--color-text-secondary)">
+                <p>Чатов нет. Создайте первый.</p>
+            </div>
+        }
+        else
+        {
+            <div style="display:grid;gap:12px">
+                @foreach (var chat in project.Chats.OrderByDescending(c => c.UpdatedAt))
+                {
+                    <div class="card chat-card" @onclick="() => OpenChat(chat.Id)">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <span style="font-weight:500">@chat.Title</span>
+                            <span style="font-size:0.75rem;color:var(--color-text-muted);font-family:var(--font-mono)">
+                                @chat.ModelId
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .chat-card { cursor: pointer; transition: box-shadow 150ms; }
+    .chat-card:hover { box-shadow: var(--shadow-flat); }
+</style>
+
+@code {
+    [Parameter] public Guid ProjectId { get; set; }
+
+    private Project? project;
+    private bool editingName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await Db.Projects
+            .Include(p => p.Chats)
+            .FirstOrDefaultAsync(p => p.Id == ProjectId);
+    }
+
+    private void OpenChat(Guid id)
+    {
+        Nav.NavigateTo("/chat/" + id);
+    }
+
+    private async Task CreateChat()
+    {
+        if (project is null) return;
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null) return;
+
+        var chat = new Chat { Title = "Новый чат", ProjectId = project.Id, UserId = userId };
+        Db.Chats.Add(chat);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/chat/" + chat.Id);
+    }
+
+    private async Task SaveName()
+    {
+        editingName = false;
+        if (project is null) return;
+        project.UpdatedAt = DateTime.UtcNow;
+        await Db.SaveChangesAsync();
+    }
+
+    private async Task HandleNameKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await SaveName();
+        if (e.Key == "Escape") editingName = false;
+    }
+}

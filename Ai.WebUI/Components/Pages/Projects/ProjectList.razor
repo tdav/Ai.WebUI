@@ -1,0 +1,85 @@
+@* Ai.WebUI/Components/Pages/Projects/ProjectList.razor *@
+@page "/"
+@attribute [Authorize]
+@using Ai.WebUI.Database
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
+@inject AuthenticationStateProvider AuthState
+@inject NavigationManager Nav
+
+<PageTitle>Проекты — Ai.WebUI</PageTitle>
+
+<div style="max-width:800px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <h1 style="font-size:1.5rem;font-weight:600">Проекты</h1>
+        <button class="btn btn-accent" @onclick="CreateProject">+ Новый проект</button>
+    </div>
+
+    @if (projects.Count == 0)
+    {
+        <div class="card" style="text-align:center;color:var(--color-text-secondary)">
+            <p>Проектов пока нет. Создайте первый.</p>
+        </div>
+    }
+    else
+    {
+        <div style="display:grid;gap:16px">
+            @foreach (var project in projects)
+            {
+                <div class="card project-card" @onclick="() => OpenProject(project.Id)">
+                    <div style="display:flex;justify-content:space-between;align-items:start">
+                        <div>
+                            <h2 style="font-size:1rem;font-weight:500;margin-bottom:4px">@project.Name</h2>
+                            @if (project.Description is not null)
+                            {
+                                <p style="color:var(--color-text-secondary);font-size:0.8rem">@project.Description</p>
+                            }
+                        </div>
+                        <span style="font-size:0.75rem;color:var(--color-text-muted)">
+                            @project.Chats.Count чат(ов)
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .project-card { cursor: pointer; transition: box-shadow 150ms; }
+    .project-card:hover { box-shadow: var(--shadow-flat); }
+</style>
+
+@code {
+    private List<Project> projects = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null) return;
+
+        projects = await Db.Projects
+            .Include(p => p.Chats)
+            .Where(p => p.UserId == userId)
+            .OrderByDescending(p => p.UpdatedAt)
+            .ToListAsync();
+    }
+
+    private void OpenProject(Guid id)
+    {
+        Nav.NavigateTo("/projects/" + id);
+    }
+
+    private async Task CreateProject()
+    {
+        var auth = await AuthState.GetAuthenticationStateAsync();
+        var userId = auth.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null) return;
+
+        var project = new Project { Name = "Новый проект", UserId = userId };
+        Db.Projects.Add(project);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/projects/" + project.Id);
+    }
+}
