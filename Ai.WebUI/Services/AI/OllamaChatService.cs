@@ -6,7 +6,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Ai.WebUI.Services.AI;
 
-public class OllamaChatService(Kernel kernel, IHttpClientFactory httpClientFactory)
+public class OllamaChatService(Kernel kernel, IHttpClientFactory httpClientFactory) : IOllamaChatService
 {
     public async IAsyncEnumerable<string> StreamAsync(
         ChatHistory history,

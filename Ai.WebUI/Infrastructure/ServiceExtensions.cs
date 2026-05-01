@@ -1,4 +1,5 @@
 using Ai.WebUI.Database;
+using Ai.WebUI.Services;
 using Ai.WebUI.Services.AI;
 using Ai.WebUI.Database.Entities;
 using Ai.WebUI.DataFormats;
@@ -44,6 +45,7 @@ public static class ServiceExtensions
             client.BaseAddress = new Uri(baseUrl));
 
         services.AddScoped<OllamaChatService>();
+        services.AddScoped<IOllamaChatService>(sp => sp.GetRequiredService<OllamaChatService>());
         services.AddScoped<IChatHistoryReducer, ChatHistoryReducer>();
 
         return services;
