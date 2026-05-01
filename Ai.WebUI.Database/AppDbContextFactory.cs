@@ -7,8 +7,6 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<MyDbContext>
 {
     public MyDbContext CreateDbContext(string[] args)
     {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
         var options = new DbContextOptionsBuilder<MyDbContext>()
             .UseNpgsql("Host=localhost;Database=webui_ai_log;Username=postgres;Password=postgres")
             .UseSnakeCaseNamingConvention()

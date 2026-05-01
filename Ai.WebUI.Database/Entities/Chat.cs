@@ -12,6 +12,6 @@ public class Chat
     public string ChatHistoryJson { get; set; } = "[]";
     public int TotalTokens { get; set; }
     public List<Document> Documents { get; set; } = [];
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
 }

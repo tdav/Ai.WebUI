@@ -1,6 +1,7 @@
 using Ai.WebUI.Database.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Ai.WebUI.Database;
 
@@ -50,5 +51,12 @@ public class MyDbContext(DbContextOptions<MyDbContext> options) : IdentityDbCont
                 .OnDelete(DeleteBehavior.NoAction);
             e.Property(d => d.ExtractedText).HasColumnType("text");
         });
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        //base.OnConfiguring(optionsBuilder);
+
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.MigrationsUserTransactionWarning));
     }
 }

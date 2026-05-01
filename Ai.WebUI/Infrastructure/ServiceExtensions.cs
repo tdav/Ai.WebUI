@@ -1,12 +1,13 @@
 using Ai.WebUI.Database;
-using Ai.WebUI.Services;
-using Ai.WebUI.Services.AI;
 using Ai.WebUI.Database.Entities;
 using Ai.WebUI.DataFormats;
+using Ai.WebUI.Services;
+using Ai.WebUI.Services.AI;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Serilog;
 
 namespace Ai.WebUI.Infrastructure;
 
@@ -15,7 +16,12 @@ public static class ServiceExtensions
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connStr = configuration.GetConnectionString("DefaultConnection");
-        services.AddDbContextFactory<MyDbContext>(options => options.UseNpgsql(connStr), ServiceLifetime.Scoped);
+        services.AddDbContextFactory<MyDbContext>(options =>
+        options
+        .UseNpgsql(connStr)
+        .UseSnakeCaseNamingConvention()
+        .EnableDetailedErrors()
+        .EnableSensitiveDataLogging(), ServiceLifetime.Scoped);
 
         services.AddIdentity<AppUser, IdentityRole>(options =>
         {
@@ -60,10 +66,37 @@ public static class ServiceExtensions
 
     public static async Task UpdateMigrateDatabaseAsync(this WebApplication app)
     {
-        await using var scope = app.Services.CreateAsyncScope();
-        var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-        await db.Database.MigrateAsync();
-        await SeedAdminUserAsync(scope.ServiceProvider, app.Configuration);
+    //    await using var scope = app.Services.CreateAsyncScope();
+    //    var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+    //    await db.Database.MigrateAsync();
+    //    await SeedAdminUserAsync(scope.ServiceProvider, app.Configuration);
+    //}
+
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+
+        try
+        {
+            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+            if (pendingMigrations.Any())
+            {
+                Log.Information("Applying {Count} pending migrations: {Migrations}",
+                    pendingMigrations.Count(),
+                    string.Join(", ", pendingMigrations));
+
+                await dbContext.Database.MigrateAsync();
+                Log.Information("Database migrations applied successfully");
+            }
+            else
+            {
+                Log.Information("No pending migrations found. Database is up to date");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while applying database migrations");
+            throw;
+        }
     }
 
     private static async Task SeedAdminUserAsync(IServiceProvider services, IConfiguration configuration)

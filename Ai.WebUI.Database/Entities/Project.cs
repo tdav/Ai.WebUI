@@ -8,6 +8,6 @@ public class Project
     public string UserId { get; set; } = string.Empty;
     public AppUser User { get; set; } = null!;
     public List<Chat> Chats { get; set; } = [];
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
 }

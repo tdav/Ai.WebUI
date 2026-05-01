@@ -10,6 +10,8 @@ public partial class Program
 {
     private static async Task Main(string[] args)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -22,8 +24,7 @@ public partial class Program
 
         builder.Host.UseSerilog();
 
-        builder.Services.AddRazorComponents()
-            .AddInteractiveServerComponents();
+        builder.Services.AddRazorComponents()            .AddInteractiveServerComponents();
 
         builder.Services.AddCascadingAuthenticationState();
         builder.Services.AddDatabase(builder.Configuration);

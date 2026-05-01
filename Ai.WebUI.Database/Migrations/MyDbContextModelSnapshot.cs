@@ -38,7 +38,7 @@ namespace Ai.WebUI.Database.Migrations
                         .HasColumnName("concurrency_stamp");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
                     b.Property<string>("DisplayName")
@@ -129,7 +129,7 @@ namespace Ai.WebUI.Database.Migrations
                         .HasColumnName("chat_history_json");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
                     b.Property<string>("ModelId")
@@ -151,7 +151,7 @@ namespace Ai.WebUI.Database.Migrations
                         .HasColumnName("total_tokens");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
                     b.Property<string>("UserId")
@@ -188,7 +188,7 @@ namespace Ai.WebUI.Database.Migrations
                         .HasColumnName("content_type");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
                     b.Property<string>("ExtractedText")
@@ -231,7 +231,7 @@ namespace Ai.WebUI.Database.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
                     b.Property<string>("Description")
@@ -244,7 +244,7 @@ namespace Ai.WebUI.Database.Migrations
                         .HasColumnName("name");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
                     b.Property<string>("UserId")

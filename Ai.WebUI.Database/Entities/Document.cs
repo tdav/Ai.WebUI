@@ -11,5 +11,5 @@ public class Document
     public Chat Chat { get; set; } = null!;
     public string UserId { get; set; } = string.Empty;
     public AppUser User { get; set; } = null!;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 }
